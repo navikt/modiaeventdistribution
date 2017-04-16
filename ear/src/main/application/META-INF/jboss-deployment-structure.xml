@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+    <deployment>
+        <exclude-subsystems>
+            <subsystem name="webservices"/>
+            <subsystem name="jaxrs"/>
+        </exclude-subsystems>
+        <exclusions>
+            <module name="org.slf4j"/>
+        </exclusions>
+    </deployment>
+    <sub-deployment name="modiaeventdistribution-web.war">
+        <exclusions>
+            <module name="org.slf4j"/>
+        </exclusions>
+        <dependencies>
+            <module name="javax.xml.ws.api" export="true" />
+            <module name="javax.jws.api" export="true" />
+            <module name="sun.jdk"/>
+            <system>
+                <paths>
+                    <path name="com/sun/org/apache/xerces/internal/jaxp/datatype"/>
+                    <path name="com/sun/image/codec/jpeg"/>
+                </paths>
+            </system>
+        </dependencies>
+    </sub-deployment>
+</jboss-deployment-structure>

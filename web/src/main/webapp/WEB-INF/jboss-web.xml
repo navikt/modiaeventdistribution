@@ -1,0 +1,4 @@
+<jboss-web>
+    <context-root>modiaeventdistribution</context-root>
+    <security-domain>jaspitest</security-domain>
+</jboss-web>

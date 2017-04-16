@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://appconfig.aura.nav.no"
+             xsi:schemaLocation="http://appconfig.aura.nav.no http://maven.adeo.no/xsd/appconfig.xsd">
+
+    <name>modiaeventdistribution</name>
+
+    <selftest>
+        <path>modiaeventdistribution/internal/selftest</path>
+        <humanReadablePath>modiaeventdistribution/internal/selftest</humanReadablePath>
+    </selftest>
+
+    <artifacts>
+        <ear groupId="no.nav.sbl" artifactId="modiaeventdistribution-ear"/>
+    </artifacts>
+
+    <resources>
+        <baseUrl alias="modapp"/>
+        <rest alias="oidc-login-api" mapToProperty="oidc-redirect"/>
+        <rest alias="events-api" mapToProperty="events-api"/>
+        <baseUrl alias="isso-host"/>
+        <baseUrl alias="isso-jwks"/>
+        <baseUrl alias="isso-issuer"/>
+        <credential alias="isso-rp-user"/>
+    </resources>
+
+    <security serviceUserResourceAlias="srvmodiaeventdistribution" />
+
+    <serverOptions>
+        <memoryParameters resourceAlias="modiaeventdistribution-memparam"/>
+        <webSockets enable="true"/>
+    </serverOptions>
+
+    <loadBalancer isAlive="modiaeventdistribution/internal/isAlive"/>
+</application>
