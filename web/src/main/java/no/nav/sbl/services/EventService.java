@@ -28,7 +28,7 @@ public class EventService {
     private String baseUrl = getProperty("events-api.url") + "/";
 
     @Scheduled(fixedRate = 1000)
-    @Timed
+    @Timed(name = "hentOgDistribuerHendelser")
     public void hentOgDistribuerHendelser() {
         if (laast) {
             return;
