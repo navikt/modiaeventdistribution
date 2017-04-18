@@ -2,10 +2,12 @@ package no.nav.sbl.selftest;
 
 import no.nav.sbl.dialogarena.common.web.selftest.SelfTestBaseServlet;
 import no.nav.sbl.dialogarena.types.Pingable;
+import no.nav.sbl.services.EventService;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -23,6 +25,9 @@ public class SelftestServlet extends SelfTestBaseServlet {
     private static final String APPLIKASJONS_NAVN = "modiaeventdistribution";
     private ApplicationContext ctx = null;
 
+    @Inject
+    private EventService eventService;
+
     @Override
     public void init() throws ServletException {
         ctx = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -37,7 +42,8 @@ public class SelftestServlet extends SelfTestBaseServlet {
     @Override
     protected Collection<? extends Pingable> getPingables() {
         return asList(
-                pingUrl("MODIACONTEXTHOLDER_EVENTS_API", getProperty("modapp.url") + "/modiacontextholder/internal/isAlive")
+                pingUrl("MODIACONTEXTHOLDER_EVENTS_API", getProperty("modapp.url") + "/modiacontextholder/internal/isAlive"),
+                () -> lyktes("SIST LESTE EVENTID: " + eventService.getSistLesteEventId())
         );
     }
 

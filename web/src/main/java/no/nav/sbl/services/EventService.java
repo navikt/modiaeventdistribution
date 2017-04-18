@@ -27,6 +27,10 @@ public class EventService {
     private Client client = newClient();
     private String baseUrl = getProperty("events-api.url") + "/";
 
+    public long getSistLesteEventId() {
+        return sistLesteEventId;
+    }
+
     @Scheduled(fixedRate = 1000)
     @Timed(name = "hentOgDistribuerHendelser")
     public void hentOgDistribuerHendelser() {
