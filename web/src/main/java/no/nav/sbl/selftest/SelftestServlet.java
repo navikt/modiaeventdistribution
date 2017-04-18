@@ -25,12 +25,12 @@ public class SelftestServlet extends SelfTestBaseServlet {
     private static final String APPLIKASJONS_NAVN = "modiaeventdistribution";
     private ApplicationContext ctx = null;
 
-    @Inject
     private EventService eventService;
 
     @Override
     public void init() throws ServletException {
         ctx = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        eventService = (EventService) ctx.getBean("eventService");
         super.init();
     }
 
