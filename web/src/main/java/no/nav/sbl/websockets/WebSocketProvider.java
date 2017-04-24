@@ -1,6 +1,7 @@
 package no.nav.sbl.websockets;
 
 
+import no.nav.sbl.domain.Event;
 import org.slf4j.Logger;
 
 import javax.websocket.OnClose;
@@ -10,26 +11,21 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
-import static no.nav.sbl.websockets.WebsocketDispatcher.addSubscriber;
-import static no.nav.sbl.websockets.WebsocketDispatcher.removeSubscriber;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ServerEndpoint("/websocket")
 public class WebSocketProvider {
     private static final Logger LOG = getLogger(WebSocketProvider.class);
+    private static Session sisteSession;
 
     @OnOpen
     public void onOpen(Session session){
-        try {
-            addSubscriber(session);
-            session.getBasicRemote().sendText("Connection Established");
-        } catch (IOException e) {
-            LOG.error("Feil ved opprettelse av Websocket-forbindelse", e);
-        }
+        sisteSession = session;
     }
 
     @OnMessage
     public void onMessage(String message, Session session){
+        sisteSession = session;
         String respons = "ping!";
         try {
             session.getBasicRemote().sendText(respons);
@@ -40,7 +36,17 @@ public class WebSocketProvider {
 
     @OnClose
     public void onClose(Session session){
-        removeSubscriber(session);
+        sisteSession = session;
     }
 
+    public static Session getSisteSession() {
+        return sisteSession;
+    }
+
+    public static void sendEventToWebsocketSubscriber(Event event) {
+        if (sisteSession == null) {
+            return;
+        }
+        sisteSession.getOpenSessions().forEach(session -> session.getAsyncRemote().sendText(event.eventType));
+    }
 }

@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import static java.lang.System.getProperty;
 import static javax.ws.rs.client.ClientBuilder.newClient;
-import static no.nav.sbl.websockets.WebsocketDispatcher.sendEventToWebsocketSubscriber;
+import static no.nav.sbl.websockets.WebSocketProvider.sendEventToWebsocketSubscriber;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -47,8 +47,7 @@ public class EventService {
                 }
                 sendEventToWebsocketSubscriber(event);
             });
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Det skjedde en feil ved henting av eventer fra Contextholderen", e);
         } finally {
             laast = false;

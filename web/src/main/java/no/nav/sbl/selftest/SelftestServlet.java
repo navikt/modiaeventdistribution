@@ -3,11 +3,11 @@ package no.nav.sbl.selftest;
 import no.nav.sbl.dialogarena.common.web.selftest.SelfTestBaseServlet;
 import no.nav.sbl.dialogarena.types.Pingable;
 import no.nav.sbl.services.EventService;
+import no.nav.sbl.websockets.WebSocketProvider;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -18,6 +18,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Arrays.asList;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.feilet;
 import static no.nav.sbl.dialogarena.types.Pingable.Ping.lyktes;
+import static no.nav.sbl.websockets.WebSocketProvider.getSisteSession;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class SelftestServlet extends SelfTestBaseServlet {
@@ -35,6 +36,15 @@ public class SelftestServlet extends SelfTestBaseServlet {
     }
 
     @Override
+    protected String getCustomMarkup() {
+        int antallAktiveSessions = getSisteSession() != null ? getSisteSession().getOpenSessions().size() : 0;
+        return "<div>" +
+                "<p>SIST LESTE EVENTID: " + eventService.getSistLesteEventId() + "</p>" +
+                "<p>ANTALL AKTIVE SESSIONS: " + antallAktiveSessions + "</p>" +
+                "</div>";
+    }
+
+    @Override
     protected String getApplicationName() {
         return APPLIKASJONS_NAVN;
     }
@@ -42,8 +52,7 @@ public class SelftestServlet extends SelfTestBaseServlet {
     @Override
     protected Collection<? extends Pingable> getPingables() {
         return asList(
-                pingUrl("MODIACONTEXTHOLDER_EVENTS_API", getProperty("modapp.url") + "/modiacontextholder/internal/isAlive"),
-                () -> lyktes("SIST LESTE EVENTID: " + eventService.getSistLesteEventId())
+                pingUrl("MODIACONTEXTHOLDER_EVENTS_API", getProperty("modapp.url") + "/modiacontextholder/internal/isAlive")
         );
     }
 
