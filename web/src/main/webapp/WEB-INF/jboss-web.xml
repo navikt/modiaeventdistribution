@@ -1,4 +1,5 @@
 <jboss-web>
+    <enable-websockets>true</enable-websockets>
     <context-root>modiaeventdistribution</context-root>
     <security-domain>jaspitest</security-domain>
 </jboss-web>
