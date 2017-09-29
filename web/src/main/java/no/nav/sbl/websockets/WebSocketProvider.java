@@ -47,6 +47,8 @@ public class WebSocketProvider {
         if (sisteSession == null) {
             return;
         }
-        sisteSession.getOpenSessions().forEach(session -> session.getAsyncRemote().sendText(event.eventType));
+        sisteSession.getOpenSessions().stream()
+                .filter(session -> event.veilederIdent.equals(session.getUserPrincipal().getName()))
+                .forEach(session -> session.getAsyncRemote().sendText(event.eventType));
     }
 }
