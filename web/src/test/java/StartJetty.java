@@ -1,6 +1,6 @@
 import no.nav.brukerdialog.security.context.InternbrukerSubjectHandler;
-import no.nav.brukerdialog.security.context.JettySubjectHandler;
 import no.nav.sbl.dialogarena.common.jetty.Jetty;
+import no.nav.sbl.websockets.WebSocketProvider;
 import org.apache.geronimo.components.jaspi.AuthConfigFactoryImpl;
 
 import javax.security.auth.message.config.AuthConfigFactory;
@@ -24,10 +24,13 @@ public class StartJetty {
                 .at("modiaeventdistribution")
                 .port(8391)
                 .configureForJaspic()
+                .websocketEndpoint(WebSocketProvider.class)
+                .disableAnnotationScanning()
                 .overrideWebXml()
                 .loadProperties("/environment.properties")
                 .buildJetty();
         jetty.startAnd(first(waitFor(gotKeypress())).then(jetty.stop));
+
     }
 
 }
