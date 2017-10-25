@@ -32,5 +32,10 @@
         <webSockets enable="true"/>
     </serverOptions>
 
+    <exposed-services>
+        <exposedRest path="/modiaeventdistribution/internal/isAlive" name="modiaeventdistribution-isalive" description="enkel isAlive for appen"/>
+        <exposedRest path="/modiaeventdistribution/websocket" name="modiaeventdistribution-websocket" description="Endepunkt for websocketen hvor eventene publiseres"/>
+    </exposed-services>
+
     <loadBalancer isAlive="modiaeventdistribution/internal/isAlive"/>
 </application>
