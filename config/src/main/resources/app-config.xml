@@ -22,7 +22,7 @@
         <baseUrl alias="isso-jwks"/>
         <baseUrl alias="isso-issuer"/>
         <baseUrl alias="isso.isalive"/>
-        <credential alias="isso-rp-user"/>
+        <credential alias="OpenIdConnectAgent"/>
     </resources>
 
     <security serviceUserResourceAlias="srvmodiaeventdistribution" />
