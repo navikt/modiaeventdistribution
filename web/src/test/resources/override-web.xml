@@ -7,7 +7,7 @@
     <session-config>
         <session-timeout>60</session-timeout>
         <cookie-config>
-            <name>SYFOREST_JSESSIONID</name>
+            <name>modiaeventdistribution_JSESSIONID</name>
             <http-only>true</http-only>
             <secure>false</secure>
         </cookie-config>
