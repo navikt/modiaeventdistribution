@@ -11,6 +11,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
+import static no.nav.metrics.MetricsFactory.createEvent;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ServerEndpoint("/websocket")
@@ -21,6 +22,7 @@ public class WebSocketProvider {
     @OnOpen
     public void onOpen(Session session){
         sisteSession = session;
+        createEvent("websockets").addFieldToReport("antall", session.getOpenSessions().size()).report();
     }
 
     @OnMessage
