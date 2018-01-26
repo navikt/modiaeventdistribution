@@ -46,4 +46,7 @@
         <appender-ref ref="infolog"/>
     </root>
 
+    <logger name="no.nav.sbl.dialogarena.common.web.selftest.SelfTestBaseServlet" level="OFF" />
+    <logger name="no.nav.batch.aspects.RunOnlyOnMasterAspect" level="OFF" />
+
 </configuration>
