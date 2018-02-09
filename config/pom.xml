@@ -11,19 +11,4 @@
 
     <artifactId>modiaeventdistribution-config</artifactId>
     <packaging>jar</packaging>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>no.nav.maven.plugins</groupId>
-                <artifactId>aura-maven-plugin</artifactId>
-                <version>6.0.9</version>
-                <configuration>
-                    <username>admin</username>
-                    <password>admin</password>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
