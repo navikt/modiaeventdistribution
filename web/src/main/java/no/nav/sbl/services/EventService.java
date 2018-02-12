@@ -39,7 +39,7 @@ public class EventService {
         }
         try {
             laast = true;
-            Events events = getEventsAfterId(sistLesteEventId);
+            Events events = getNewEvents();
             events.events.forEach(event -> {
                 if (event.id > sistLesteEventId) {
                     sistLesteEventId = event.id;
@@ -53,7 +53,7 @@ public class EventService {
         }
     }
 
-    public Events getEventsAfterId(long id) {
+    public Events getNewEvents() {
         WebTarget target = client.target(baseUrl + sistLesteEventId);
         return target.request(MediaType.APPLICATION_JSON).get().readEntity(Events.class);
     }

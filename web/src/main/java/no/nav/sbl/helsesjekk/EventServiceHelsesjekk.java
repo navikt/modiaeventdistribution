@@ -20,7 +20,7 @@ public class EventServiceHelsesjekk implements Helsesjekk {
 
     @Override
     public void helsesjekk() throws Throwable {
-        eventService.getEventsAfterId(eventService.getSistLesteEventId());
+        eventService.getNewEvents();
     }
 
     @Override
