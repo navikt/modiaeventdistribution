@@ -14,14 +14,16 @@ import java.io.IOException;
 import static no.nav.metrics.MetricsFactory.createEvent;
 import static org.slf4j.LoggerFactory.getLogger;
 
-@ServerEndpoint("/ws/{ident}")
-public class WebSocketProvider {
-    private static final Logger LOG = getLogger(WebSocketProvider.class);
+@ServerEndpoint("/websocket")
+@Deprecated
+public class OldWebSocketProvider {
+    private static final Logger LOG = getLogger(OldWebSocketProvider.class);
     private static Session sisteSession;
 
     @OnOpen
     public void onOpen(Session session) {
         sisteSession = session;
+        LOG.warn("Ny tilkobling mot deprecated endepunkt, totalt antall aktive sessions mot endepunktet: ", session.getOpenSessions().size());
     }
 
     @OnMessage
@@ -40,10 +42,6 @@ public class WebSocketProvider {
         sisteSession = session;
     }
 
-    public static Session getSisteSession() {
-        return sisteSession;
-    }
-
     public static int getAntallTilkoblinger() {
         if (sisteSession == null) {
             return 0;
@@ -51,8 +49,8 @@ public class WebSocketProvider {
         return sisteSession.getOpenSessions().size();
     }
 
-    private static String getIdentForSession(Session session) {
-        return session.getPathParameters().getOrDefault("ident", "ukjent");
+    public static Session getSisteSession() {
+        return sisteSession;
     }
 
     public static void sendEventToWebsocketSubscriber(Event event) {
@@ -60,7 +58,7 @@ public class WebSocketProvider {
             return;
         }
         sisteSession.getOpenSessions().stream()
-                .filter(session -> event.veilederIdent.equals(getIdentForSession(session)))
+                .filter(session -> event.veilederIdent.equals(session.getUserPrincipal().getName()))
                 .forEach(session -> session.getAsyncRemote().sendText(event.eventType));
     }
 }
