@@ -2,6 +2,8 @@ package no.nav.sbl.services;
 
 import no.nav.metrics.aspects.Timed;
 import no.nav.sbl.domain.Events;
+import no.nav.sbl.websockets.OldWebSocketProvider;
+import no.nav.sbl.websockets.WebSocketProvider;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -16,7 +18,7 @@ import java.io.IOException;
 
 import static java.lang.System.getProperty;
 import static javax.ws.rs.client.ClientBuilder.newClient;
-import static no.nav.sbl.websockets.WebSocketProvider.sendEventToWebsocketSubscriber;
+import static no.nav.metrics.MetricsFactory.createEvent;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -44,13 +46,27 @@ public class EventService {
                 if (event.id > sistLesteEventId) {
                     sistLesteEventId = event.id;
                 }
-                sendEventToWebsocketSubscriber(event);
+                sendMetrikkEventOmAntallTilkoblinger();
+                OldWebSocketProvider.sendEventToWebsocketSubscriber(event);
+                WebSocketProvider.sendEventToWebsocketSubscriber(event);
             });
         } catch (Exception e) {
             LOGGER.error("Det skjedde en feil ved henting av eventer fra Contextholderen", e);
         } finally {
             laast = false;
         }
+    }
+
+    private void sendMetrikkEventOmAntallTilkoblinger() {
+        int antallTilkoblingGammelWS = OldWebSocketProvider.getAntallTilkoblinger();
+        int antallTilkoblingerNyWS = WebSocketProvider.getAntallTilkoblinger();
+        int totaltAntall = antallTilkoblingerNyWS + antallTilkoblingGammelWS;
+
+        createEvent("websockets.tilkoblinger")
+                .addFieldToReport("antall", totaltAntall)
+                .addFieldToReport("antallGammel", antallTilkoblingGammelWS)
+                .addFieldToReport("antallNy", antallTilkoblingerNyWS)
+                .report();
     }
 
     public Events getNewEvents() {

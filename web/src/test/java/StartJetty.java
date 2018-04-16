@@ -1,4 +1,5 @@
 import no.nav.sbl.dialogarena.common.jetty.Jetty;
+import no.nav.sbl.websockets.OldWebSocketProvider;
 import no.nav.sbl.websockets.WebSocketProvider;
 
 import static no.nav.sbl.dialogarena.common.jetty.Jetty.usingWar;
@@ -21,6 +22,7 @@ public class StartJetty {
         Jetty jetty = usingWar()
                 .at("modiaeventdistribution")
                 .port(8391)
+                .websocketEndpoint(OldWebSocketProvider.class)
                 .websocketEndpoint(WebSocketProvider.class)
                 .disableAnnotationScanning()
                 .overrideWebXml()
