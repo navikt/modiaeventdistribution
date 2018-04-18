@@ -23,7 +23,6 @@ public class OldWebSocketProvider {
     @OnOpen
     public void onOpen(Session session) {
         sisteSession = session;
-        LOG.warn("Ny tilkobling mot deprecated endepunkt, totalt antall aktive sessions mot endepunktet: ", session.getOpenSessions().size());
     }
 
     @OnMessage

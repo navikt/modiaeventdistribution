@@ -36,6 +36,8 @@ public class EventService {
     @Scheduled(fixedRate = 1000)
     @Timed(name = "hentOgDistribuerHendelser")
     public void hentOgDistribuerHendelser() {
+        sendMetrikkEventOmAntallTilkoblinger();
+
         if (laast) {
             return;
         }
@@ -46,7 +48,6 @@ public class EventService {
                 if (event.id > sistLesteEventId) {
                     sistLesteEventId = event.id;
                 }
-                sendMetrikkEventOmAntallTilkoblinger();
                 OldWebSocketProvider.sendEventToWebsocketSubscriber(event);
                 WebSocketProvider.sendEventToWebsocketSubscriber(event);
             });
