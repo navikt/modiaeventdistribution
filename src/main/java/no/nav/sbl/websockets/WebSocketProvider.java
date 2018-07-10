@@ -4,10 +4,7 @@ package no.nav.sbl.websockets;
 import no.nav.sbl.domain.Event;
 import org.slf4j.Logger;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
@@ -38,6 +35,11 @@ public class WebSocketProvider {
     @OnClose
     public void onClose(Session session) {
         sisteSession = session;
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        LOG.error(throwable.getMessage(), throwable);
     }
 
     public static Session getSisteSession() {

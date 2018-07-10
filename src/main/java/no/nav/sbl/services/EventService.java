@@ -60,8 +60,10 @@ public class EventService {
     }
 
     private void sendMetrikkEventOmAntallTilkoblinger() {
+        int antallTilkoblinger = WebSocketProvider.getAntallTilkoblinger();
+        LOGGER.info("antall: {}", antallTilkoblinger);
         createEvent("websockets.tilkoblinger")
-                .addFieldToReport("antall", WebSocketProvider.getAntallTilkoblinger())
+                .addFieldToReport("antall", antallTilkoblinger)
                 .report();
     }
 
