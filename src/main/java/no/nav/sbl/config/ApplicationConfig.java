@@ -1,8 +1,10 @@
 package no.nav.sbl.config;
 
 import no.nav.apiapp.ApiApplication;
+import no.nav.apiapp.config.ApiAppConfigurator;
 import no.nav.metrics.aspects.TimerAspect;
 import no.nav.sbl.services.EventService;
+import no.nav.sbl.websockets.WebSocketProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -15,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Import({
         HelsesjekkConfig.class
 })
-public class ApplicationConfig implements ApiApplication {
+public class ApplicationConfig implements ApiApplication.NaisApiApplication {
 
     @Bean
     public TimerAspect timerAspect() {
@@ -28,17 +30,13 @@ public class ApplicationConfig implements ApiApplication {
     }
 
     @Override
-    public String getApplicationName() {
-        return "modiaeventdistribution";
-    }
-
-    @Override
-    public Sone getSone() {
-        return Sone.FSS;
-    }
-
-    @Override
     public boolean brukSTSHelsesjekk() {
         return false;
     }
+
+    @Override
+    public void configure(ApiAppConfigurator apiAppConfigurator) {
+        apiAppConfigurator.customizeJettyBuilder(jettyBuilder -> jettyBuilder.websocketEndpoint(WebSocketProvider.class));
+    }
+
 }

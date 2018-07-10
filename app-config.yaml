@@ -1,0 +1,33 @@
+# ref https://raw.githubusercontent.com/nais/naisd/master/nais_example.yaml
+image: docker.adeo.no:5000/fo/modiaeventdistribution
+replicas:
+  min: 2
+  max: 4
+  cpuThresholdPercentage: 50
+port: 8080
+healthcheck:
+  liveness:
+    path: modiaeventdistribution/internal/isAlive
+    initialDelay: 20
+  readiness:
+    path: modiaeventdistribution/internal/selftest
+    initialDelay: 20
+prometheus:
+  enabled: true
+  path: modiaeventdistribution/internal/metrics
+resources:
+  limits:
+    cpu: 3
+fasitResources:
+  used:
+  - alias: loadbalancer:modiaeventdistribution
+    resourceType: loadbalancerconfig
+  - alias: events-api
+    resourceType: restservice
+  exposed:
+  - alias: modiaeventdistribution-isalive
+    resourceType: restservice
+    path: /modiaeventdistribution/internal/isAlive
+  - alias: modiaeventdistribution-websocket
+    resourceType: restservice
+    path: /modiaeventdistribution/websocket

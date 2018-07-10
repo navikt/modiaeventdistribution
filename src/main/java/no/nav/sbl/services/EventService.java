@@ -2,7 +2,6 @@ package no.nav.sbl.services;
 
 import no.nav.metrics.aspects.Timed;
 import no.nav.sbl.domain.Events;
-import no.nav.sbl.websockets.OldWebSocketProvider;
 import no.nav.sbl.websockets.WebSocketProvider;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,18 +15,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static java.lang.System.getProperty;
-import static javax.ws.rs.client.ClientBuilder.newClient;
 import static no.nav.metrics.MetricsFactory.createEvent;
+import static no.nav.sbl.rest.RestUtils.createClient;
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class EventService {
+
+    public static final String EVENTS_API_URL_PROPERTY_NAME = "EVENTS_API_URL";
+
     private static final Logger LOGGER = getLogger(EventService.class);
     private long sistLesteEventId;
     private boolean laast = false;
-    private Client client = newClient();
-    private String baseUrl = getProperty("events-api.url") + "/";
+    private Client client = createClient();
+    private String baseUrl = getRequiredProperty(EVENTS_API_URL_PROPERTY_NAME) + "/";
 
     public long getSistLesteEventId() {
         return sistLesteEventId;
@@ -48,7 +50,6 @@ public class EventService {
                 if (event.id > sistLesteEventId) {
                     sistLesteEventId = event.id;
                 }
-                OldWebSocketProvider.sendEventToWebsocketSubscriber(event);
                 WebSocketProvider.sendEventToWebsocketSubscriber(event);
             });
         } catch (Exception e) {
@@ -59,14 +60,8 @@ public class EventService {
     }
 
     private void sendMetrikkEventOmAntallTilkoblinger() {
-        int antallTilkoblingGammelWS = OldWebSocketProvider.getAntallTilkoblinger();
-        int antallTilkoblingerNyWS = WebSocketProvider.getAntallTilkoblinger();
-        int totaltAntall = antallTilkoblingerNyWS + antallTilkoblingGammelWS;
-
         createEvent("websockets.tilkoblinger")
-                .addFieldToReport("antall", totaltAntall)
-                .addFieldToReport("antallGammel", antallTilkoblingGammelWS)
-                .addFieldToReport("antallNy", antallTilkoblingerNyWS)
+                .addFieldToReport("antall", WebSocketProvider.getAntallTilkoblinger())
                 .report();
     }
 
