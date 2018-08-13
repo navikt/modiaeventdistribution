@@ -2,8 +2,7 @@
 image: docker.adeo.no:5000/fo/modiaeventdistribution
 replicas:
   min: 4
-  max: 8
-  cpuThresholdPercentage: 25
+  max: 6
 port: 8080
 healthcheck:
   liveness:
@@ -16,6 +15,8 @@ prometheus:
   enabled: true
   path: modiaeventdistribution/internal/metrics
 resources:
+  requests:
+    cpu: 500m
   limits:
     cpu: 3
 fasitResources:
