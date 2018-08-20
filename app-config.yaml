@@ -8,18 +8,18 @@ port: 8080
 healthcheck:
   liveness:
     path: modiaeventdistribution/internal/isAlive
-    initialDelay: 10
   readiness:
     path: modiaeventdistribution/internal/selftest
-    initialDelay: 10
 prometheus:
   enabled: true
   path: modiaeventdistribution/internal/metrics
 resources:
   requests:
-    cpu: 500m
+    cpu: 600m
+    memory: 512Mi
   limits:
     cpu: 3
+    memory: 1024Mi
 fasitResources:
   used:
   - alias: loadbalancer:modiaeventdistribution
