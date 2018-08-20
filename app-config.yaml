@@ -26,6 +26,8 @@ fasitResources:
     resourceType: loadbalancerconfig
   - alias: events-api
     resourceType: restservice
+  - alias: appdynamics
+    resourceType: applicationproperties
   exposed:
   - alias: modiaeventdistribution-isalive
     resourceType: restservice
