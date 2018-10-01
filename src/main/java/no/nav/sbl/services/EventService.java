@@ -1,5 +1,6 @@
 package no.nav.sbl.services;
 
+import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
 import no.nav.metrics.aspects.Timed;
 import no.nav.sbl.domain.Events;
 import no.nav.sbl.websockets.WebSocketProvider;
@@ -10,26 +11,33 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.sbl.rest.RestUtils.createClient;
-import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class EventService {
 
-    public static final String EVENTS_API_URL_PROPERTY_NAME = "EVENTS_API_URL";
-
     private static final Logger LOGGER = getLogger(EventService.class);
+
+    private final SystemUserTokenProvider systemUserTokenProvider;
+    private final String eventApiBaseUrl;
     private long sistLesteEventId;
     private boolean laast = false;
     private Client client = createClient();
-    private String baseUrl = getRequiredProperty(EVENTS_API_URL_PROPERTY_NAME) + "/";
+
+
+    public EventService(SystemUserTokenProvider systemUserTokenProvider, String eventApiBaseUrl) {
+        this.systemUserTokenProvider = systemUserTokenProvider;
+        this.eventApiBaseUrl = eventApiBaseUrl;
+    }
 
     public long getSistLesteEventId() {
         return sistLesteEventId;
@@ -68,8 +76,11 @@ public class EventService {
     }
 
     public Events getNewEvents() {
-        WebTarget target = client.target(baseUrl + sistLesteEventId);
-        return target.request(MediaType.APPLICATION_JSON).get().readEntity(Events.class);
+        WebTarget target = client.target(eventApiBaseUrl + sistLesteEventId);
+        return target
+                .request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + systemUserTokenProvider.getToken())
+                .get(Events.class);
     }
 
     @PreDestroy

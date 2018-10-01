@@ -2,6 +2,7 @@ package no.nav.sbl.config;
 
 import no.nav.apiapp.ApiApplication;
 import no.nav.apiapp.config.ApiAppConfigurator;
+import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
 import no.nav.metrics.aspects.TimerAspect;
 import no.nav.sbl.services.EventService;
 import no.nav.sbl.websockets.WebSocketProvider;
@@ -11,6 +12,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import static no.nav.sbl.util.EnvironmentUtils.getRequiredProperty;
+
 @Configuration
 @EnableAspectJAutoProxy
 @EnableScheduling
@@ -19,6 +22,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 })
 public class ApplicationConfig implements ApiApplication.NaisApiApplication {
 
+    public static final String EVENTS_API_URL_PROPERTY_NAME = "EVENTS_API_URL";
+
     @Bean
     public TimerAspect timerAspect() {
         return new TimerAspect();
@@ -26,7 +31,10 @@ public class ApplicationConfig implements ApiApplication.NaisApiApplication {
 
     @Bean
     public EventService eventService() {
-        return new EventService();
+        return new EventService(
+                new SystemUserTokenProvider(),
+                getRequiredProperty(EVENTS_API_URL_PROPERTY_NAME) + "/"
+        );
     }
 
     @Override
