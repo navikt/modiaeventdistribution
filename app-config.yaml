@@ -35,6 +35,18 @@ fasitResources:
     propertyMap:
       url: OIDC_REDIRECT_URL
 
+  # ISSO
+  - alias: isso-host
+    resourceType: baseurl
+  - alias: isso-jwks
+    resourceType: baseurl
+  - alias: isso-issuer
+    resourceType: baseurl
+  - alias: isso.isalive
+    resourceType: baseurl
+  - alias: isso-rp-user
+    resourceType: credential
+
   exposed:
   - alias: modiaeventdistribution-isalive
     resourceType: restservice
