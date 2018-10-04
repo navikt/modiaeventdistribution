@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.sbl</groupId>
         <artifactId>mor-pom</artifactId>
-        <version>2018.10.03.16.38</version>
+        <version>2018.10.04.15.02</version>
     </parent>
 
     <artifactId>modiaeventdistribution</artifactId>
@@ -19,7 +19,7 @@
             <dependency>
                 <groupId>no.nav.sbl</groupId>
                 <artifactId>bom</artifactId>
-                <version>2018.10.03.16.38</version>
+                <version>2018.10.04.15.02</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
