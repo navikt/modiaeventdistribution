@@ -3,6 +3,7 @@ import no.nav.brukerdialog.tools.SecurityConstants;
 import no.nav.dialogarena.config.fasit.FasitUtils;
 import no.nav.dialogarena.config.fasit.ServiceUser;
 import no.nav.dialogarena.config.fasit.dto.RestService;
+import no.nav.sbl.util.EnvironmentUtils;
 import no.nav.testconfig.ApiAppTest;
 
 import static no.nav.sbl.config.ApplicationConfig.EVENTS_API_URL_PROPERTY_NAME;
@@ -15,6 +16,11 @@ public class MainTest {
     public static final String APPLICATION_NAME = "modiaeventdistribution";
 
     public static void main(String[] args) {
+        ApiAppTest.setupTestContext(ApiAppTest.Config.builder()
+                .applicationName(APPLICATION_NAME)
+                .build()
+        );
+
         RestService restService = FasitUtils.getRestService("events-api", FasitUtils.getDefaultEnvironment());
         setProperty(EVENTS_API_URL_PROPERTY_NAME, restService.getUrl(), PUBLIC);
 
@@ -33,14 +39,10 @@ public class MainTest {
         setProperty(Constants.ISSO_JWKS_URL_PROPERTY_NAME, issoJWS, PUBLIC);
         setProperty(Constants.ISSO_ISSUER_URL_PROPERTY_NAME, issoISSUER, PUBLIC);
         setProperty(Constants.ISSO_ISALIVE_URL_PROPERTY_NAME, issoIsAlive, PUBLIC);
-        setProperty(SecurityConstants.SYSTEMUSER_USERNAME, srvmodiaeventdistribution.getUsername(), SECRET);
-        setProperty(SecurityConstants.SYSTEMUSER_PASSWORD, srvmodiaeventdistribution.getPassword(), SECRET);
+        setProperty(EnvironmentUtils.resolveSrvUserPropertyName(), srvmodiaeventdistribution.getUsername(), PUBLIC);
+        setProperty(EnvironmentUtils.resolverSrvPasswordPropertyName(), srvmodiaeventdistribution.getPassword(), SECRET);
         setProperty(Constants.OIDC_REDIRECT_URL_PROPERTY_NAME, redirectUrl, PUBLIC);
 
-        ApiAppTest.setupTestContext(ApiAppTest.Config.builder()
-                .applicationName(APPLICATION_NAME)
-                .build()
-        );
         Main.main(args);
     }
 
