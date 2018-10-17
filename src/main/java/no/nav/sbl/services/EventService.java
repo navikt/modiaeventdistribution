@@ -2,7 +2,9 @@ package no.nav.sbl.services;
 
 import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
 import no.nav.metrics.aspects.Timed;
+import no.nav.sbl.domain.Event;
 import no.nav.sbl.domain.Events;
+import no.nav.sbl.rest.RestUtils;
 import no.nav.sbl.websockets.WebSocketProvider;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,12 +15,13 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import static no.nav.metrics.MetricsFactory.createEvent;
+import static no.nav.sbl.rest.RestUtils.LONG_READ_CONFIG;
 import static no.nav.sbl.rest.RestUtils.createClient;
 import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,9 +32,10 @@ public class EventService {
 
     private final SystemUserTokenProvider systemUserTokenProvider;
     private final String eventApiBaseUrl;
-    private long sistLesteEventId;
     private boolean laast = false;
-    private Client client = createClient();
+
+    private volatile long sistLesteEventId;
+    private final Client client = createClient(LONG_READ_CONFIG);
 
 
     public EventService(SystemUserTokenProvider systemUserTokenProvider, String eventApiBaseUrl) {
@@ -43,7 +47,7 @@ public class EventService {
         return sistLesteEventId;
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedDelay = 1000)
     @Timed(name = "hentOgDistribuerHendelser")
     public void hentOgDistribuerHendelser() {
         sendMetrikkEventOmAntallTilkoblinger();
