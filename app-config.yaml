@@ -35,6 +35,9 @@ fasitResources:
     propertyMap:
       url: OIDC_REDIRECT_URL
 
+  - alias: kafka-brokers
+    resourceType: baseurl
+
   # ISSO
   - alias: isso-host
     resourceType: baseurl
