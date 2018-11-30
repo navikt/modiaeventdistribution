@@ -1,20 +1,44 @@
 package no.nav.sbl.websockets;
 
 
+import no.nav.apiapp.util.ObjectUtils;
 import no.nav.sbl.domain.Event;
 import org.slf4j.Logger;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static no.nav.metrics.MetricsFactory.createEvent;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ServerEndpoint("/ws/{ident}")
 public class WebSocketProvider {
     private static final Logger LOG = getLogger(WebSocketProvider.class);
     private static Session sisteSession;
+
+    private static final AtomicBoolean initialized = new AtomicBoolean();
+
+    public WebSocketProvider() {
+        if (!initialized.getAndSet(true)) {
+            Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(WebSocketProvider::pingClients, 3, 3, TimeUnit.MINUTES);
+        }
+    }
+
+    private static void pingClients() {
+        getOpenSessions().forEach(WebSocketProvider::pingClient);
+    }
+
+    private static void pingClient(Session session) {
+        try {
+            session.getAsyncRemote().sendPing(null);
+        } catch (Exception e) {
+            LOG.error("Feil ved ping av Websocket-forbindelse", e);
+        }
+    }
 
     @OnOpen
     public void onOpen(Session session) {
@@ -24,12 +48,6 @@ public class WebSocketProvider {
     @OnMessage
     public void onMessage(String message, Session session) {
         sisteSession = session;
-        String respons = "ping!";
-        try {
-            session.getBasicRemote().sendText(respons);
-        } catch (IOException e) {
-            LOG.error("Feil ved ping av Websocket-forbindelse", e);
-        }
     }
 
     @OnClose
@@ -42,15 +60,12 @@ public class WebSocketProvider {
         LOG.error(throwable.getMessage(), throwable);
     }
 
-    public static Session getSisteSession() {
-        return sisteSession;
+    private static Set<Session> getOpenSessions() {
+        return sisteSession == null ? Collections.emptySet() : sisteSession.getOpenSessions();
     }
 
     public static int getAntallTilkoblinger() {
-        if (sisteSession == null) {
-            return 0;
-        }
-        return sisteSession.getOpenSessions().size();
+        return getOpenSessions().size();
     }
 
     private static String getIdentForSession(Session session) {
@@ -58,11 +73,9 @@ public class WebSocketProvider {
     }
 
     public static void sendEventToWebsocketSubscriber(Event event) {
-        if (sisteSession == null) {
-            return;
-        }
-        sisteSession.getOpenSessions().stream()
-                .filter(session -> event.veilederIdent.equals(getIdentForSession(session)))
+        getOpenSessions()
+                .stream()
+                .filter(session -> ObjectUtils.isEqual(event.veilederIdent, getIdentForSession(session)))
                 .forEach(session -> session.getAsyncRemote().sendText(event.eventType));
     }
 }
