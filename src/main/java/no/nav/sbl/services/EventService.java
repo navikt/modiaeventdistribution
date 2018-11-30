@@ -1,10 +1,10 @@
 package no.nav.sbl.services;
 
 import no.nav.brukerdialog.security.oidc.SystemUserTokenProvider;
+import no.nav.json.JsonUtils;
 import no.nav.metrics.aspects.Timed;
 import no.nav.sbl.domain.Event;
 import no.nav.sbl.domain.Events;
-import no.nav.sbl.rest.RestUtils;
 import no.nav.sbl.websockets.WebSocketProvider;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 import static no.nav.metrics.MetricsFactory.createEvent;
 import static no.nav.sbl.rest.RestUtils.LONG_READ_CONFIG;
@@ -51,7 +50,6 @@ public class EventService {
     @Timed(name = "hentOgDistribuerHendelser")
     public void hentOgDistribuerHendelser() {
         sendMetrikkEventOmAntallTilkoblinger();
-
         if (laast) {
             return;
         }
@@ -103,4 +101,9 @@ public class EventService {
             sistLesteEventId = 0;
         }
     }
+
+    public static void propagateEvent(String event, String key) {
+        WebSocketProvider.sendEventToWebsocketSubscriber(JsonUtils.fromJson(event, Event.class));
+    }
+
 }

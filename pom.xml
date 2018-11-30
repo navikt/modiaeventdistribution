@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>no.nav.sbl</groupId>
+        <groupId>no.nav.common</groupId>
         <artifactId>mor-pom</artifactId>
-        <version>2018.10.04.15.02</version>
+        <version>2018.11.30.22.21-SNAPSHOT</version>
     </parent>
 
     <artifactId>modiaeventdistribution</artifactId>
@@ -17,9 +17,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>no.nav.sbl</groupId>
+                <groupId>no.nav.common</groupId>
                 <artifactId>bom</artifactId>
-                <version>2018.10.04.15.02</version>
+                <version>2018.11.30.22.21-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -29,27 +29,35 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl</groupId>
+            <groupId>no.nav.common</groupId>
             <artifactId>api-app</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl</groupId>
+            <groupId>no.nav.common</groupId>
             <artifactId>util</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl</groupId>
+            <groupId>no.nav.common</groupId>
             <artifactId>rest</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
-            <artifactId>common-jetty</artifactId>
+            <groupId>no.nav.common</groupId>
+            <artifactId>validation</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav</groupId>
+            <groupId>no.nav.common</groupId>
+            <artifactId>jetty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
             <artifactId>metrics</artifactId>
         </dependency>
         <dependency>
@@ -108,15 +116,15 @@
 
         <!-- test -->
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
+            <groupId>no.nav.common</groupId>
             <artifactId>test-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl.dialogarena</groupId>
-            <artifactId>common-test</artifactId>
+            <groupId>no.nav.common</groupId>
+            <artifactId>test</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl</groupId>
+            <groupId>no.nav.common</groupId>
             <artifactId>fasit</artifactId>
         </dependency>
         <dependency>
