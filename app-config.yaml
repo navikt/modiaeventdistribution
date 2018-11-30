@@ -9,7 +9,7 @@ healthcheck:
   liveness:
     path: modiaeventdistribution/internal/isAlive
   readiness:
-    path: modiaeventdistribution/internal/selftest
+    path: modiaeventdistribution/internal/isReady
 prometheus:
   enabled: true
   path: modiaeventdistribution/internal/metrics
@@ -54,3 +54,6 @@ fasitResources:
   - alias: modiaeventdistribution-websocket
     resourceType: restservice
     path: /modiaeventdistribution/websocket
+
+alertProfiles:
+  - common-java-modules
