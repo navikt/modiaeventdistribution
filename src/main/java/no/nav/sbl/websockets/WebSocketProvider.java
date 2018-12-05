@@ -1,10 +1,9 @@
 package no.nav.sbl.websockets;
 
 
-import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Gauge;
 import no.nav.apiapp.util.ObjectUtils;
 import no.nav.json.JsonUtils;
-import no.nav.metrics.MetricsFactory;
 import no.nav.sbl.domain.Event;
 import org.slf4j.Logger;
 
@@ -13,17 +12,15 @@ import javax.websocket.server.ServerEndpoint;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static no.nav.metrics.MetricsFactory.createEvent;
+import static no.nav.metrics.MetricsFactory.getMeterRegistry;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @ServerEndpoint("/ws/{ident}")
 public class WebSocketProvider {
     private static final Logger LOG = getLogger(WebSocketProvider.class);
-    private static final MeterRegistry meterRegistry = MetricsFactory.getMeterRegistry();
 
     private static Session sisteSession;
 
@@ -31,9 +28,8 @@ public class WebSocketProvider {
 
     public WebSocketProvider() {
         if (!initialized.getAndSet(true)) {
-            ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-            scheduledExecutorService.scheduleWithFixedDelay(WebSocketProvider::pingClients, 3, 3, TimeUnit.MINUTES);
-            scheduledExecutorService.scheduleWithFixedDelay(WebSocketProvider::updateMetrics, 10, 30, TimeUnit.SECONDS);
+            Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(WebSocketProvider::pingClients, 3, 3, TimeUnit.MINUTES);
+            Gauge.builder("websocket_clients", WebSocketProvider::getAntallTilkoblinger).register(getMeterRegistry());
         }
     }
 
@@ -47,15 +43,6 @@ public class WebSocketProvider {
         } catch (Exception e) {
             LOG.error("Feil ved ping av Websocket-forbindelse", e);
         }
-    }
-
-    private static void updateMetrics() {
-        int antallTilkoblinger = WebSocketProvider.getAntallTilkoblinger();
-        LOG.info("antall: {}", antallTilkoblinger);
-        meterRegistry.gauge("websocket_clients", antallTilkoblinger);
-        createEvent("websockets.tilkoblinger")
-                .addFieldToReport("antall", antallTilkoblinger)
-                .report();
     }
 
     @OnOpen
@@ -82,7 +69,7 @@ public class WebSocketProvider {
         return sisteSession == null ? Collections.emptySet() : sisteSession.getOpenSessions();
     }
 
-    public static int getAntallTilkoblinger() {
+    private static int getAntallTilkoblinger() {
         return getOpenSessions().size();
     }
 
