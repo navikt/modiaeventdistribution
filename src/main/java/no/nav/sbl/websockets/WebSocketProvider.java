@@ -79,10 +79,22 @@ public class WebSocketProvider {
 
     public static void sendEventToWebsocketSubscribers(String eventAsJson, @SuppressWarnings("unused") String key) {
         Event event = JsonUtils.fromJson(eventAsJson, Event.class);
+        String veilederIdent = event.veilederIdent;
+        String eventType = event.eventType;
+        LOG.info("sending {} to {}", eventType, veilederIdent);
         getOpenSessions()
                 .stream()
-                .filter(session -> ObjectUtils.isEqual(event.veilederIdent, getIdentForSession(session)))
-                .forEach(session -> session.getAsyncRemote().sendText(event.eventType));
+                .filter(session -> ObjectUtils.isEqual(veilederIdent, getIdentForSession(session)))
+                .filter(Session::isOpen)
+                .forEach(session -> send(eventType, session));
+    }
+
+    private static void send(String eventType, Session session) {
+        try {
+            session.getAsyncRemote().sendText(eventType);
+        } catch (Exception e) {
+            LOG.warn(e.getMessage(), e);
+        }
     }
 
 }
