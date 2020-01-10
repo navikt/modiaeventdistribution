@@ -33,7 +33,7 @@ spec:
       cpu: 600m
       memory: 512Mi
   ingresses:
-    - wss://veilederflatehendelser.adeo.no
+    - https://veilederflatehendelser.adeo.no
   vault:
     enabled: true
     paths:
