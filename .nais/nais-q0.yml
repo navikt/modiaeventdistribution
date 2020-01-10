@@ -34,6 +34,7 @@ spec:
       memory: 512Mi
   ingresses:
     - wss://veilederflatehendelser-q0.adeo.no
+    - https://app-q0.adeo.no/modiaeventdistribution
   vault:
     enabled: true
     paths:

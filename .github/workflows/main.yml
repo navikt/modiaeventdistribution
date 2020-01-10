@@ -55,7 +55,6 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           PRINT_PAYLOAD: true
-          DRY_RUN: true
           CLUSTER: dev-fss
           RESOURCE: .nais/nais-q0.yml
 
