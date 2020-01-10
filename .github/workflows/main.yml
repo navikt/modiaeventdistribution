@@ -57,7 +57,7 @@ jobs:
           PRINT_PAYLOAD: true
           DRY_RUN: true
           CLUSTER: dev-fss
-          RESOURCE: nais-q0.yaml
+          RESOURCE: .nais/nais-q0.yaml
 
   deploy-prod:
     name: Deploy to prod
@@ -72,4 +72,4 @@ jobs:
           DRY_RUN: true
           PRINT_PAYLOAD: true
           CLUSTER: prod-fss
-          RESOURCE: nais.yaml
+          RESOURCE: .nais/nais.yaml
