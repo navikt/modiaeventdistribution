@@ -7,7 +7,7 @@
     <parent>
         <groupId>no.nav.common</groupId>
         <artifactId>mor-pom</artifactId>
-        <version>2018.11.30.23.45-SNAPSHOT</version>
+        <version>1.2020.01.08-12.57-62d0c889ddb5</version>
     </parent>
 
     <artifactId>modiaeventdistribution</artifactId>
@@ -19,7 +19,7 @@
             <dependency>
                 <groupId>no.nav.common</groupId>
                 <artifactId>bom</artifactId>
-                <version>2018.11.30.23.45-SNAPSHOT</version>
+                <version>1.2020.01.08-12.57-62d0c889ddb5</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -43,6 +43,10 @@
         <dependency>
             <groupId>no.nav.common</groupId>
             <artifactId>util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.common</groupId>
+            <artifactId>nais</artifactId>
         </dependency>
         <dependency>
             <groupId>no.nav.common</groupId>
