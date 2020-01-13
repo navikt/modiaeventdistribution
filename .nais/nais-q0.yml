@@ -39,22 +39,12 @@ spec:
     paths:
       - kvPath: /serviceuser/data/dev/srvmodiaeventdistribution
         mountPath: /var/run/secrets/nais.io/service_user
-      - kvPath: /credential/data/dev/isso-rp-user
-        mountPath: /var/run/secrets/nais.io/isso-rp-user
-      - kvPath: /kv/preprod/fss/modiapersonoversikt-api/q0
-        mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: /apikey/appdynamics/dev
+        mountPath: /var/run/secrets/nais.io/appdynamics
   env:
     - name: EVENTS_API_URL
       value: "https://modiacontextholder-q0.nais.preprod.local/modiacontextholder/api/events"
-    - name: OIDC_REDIRECT_URL
-      value: "https://app-q0.adeo.no/veilarblogin/api/login"
     - name: KAFKA_BROKERS_URL
       value: "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443"
-    - name: ISSO_HOST_URL
-      value: "https://isso-q.adeo.no/isso/oauth2"
-    - name: ISSO_JWKS_URL
-      value: "https://isso-q.adeo.no/isso/oauth2/connect/jwk_uri"
-    - name: ISSO_ISSUER_URL
-      value: "https://isso-q.adeo.no:443/isso/oauth2"
-    - name: ISSO_ISALIVE_URL
-      value: "https://isso-q.adeo.no/isso/isAlive.jsp"
+    - name: APP_ENVIRONMENT_NAME
+      value: "q0"
