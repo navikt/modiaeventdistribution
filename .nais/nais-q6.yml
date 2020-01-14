@@ -1,0 +1,50 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: modiaeventdistribution
+  namespace: q6
+  labels:
+    team: personoversikt
+spec:
+  image: "{{ image }}"
+  port: 8080
+  liveness:
+    path: modiaeventdistribution/internal/isAlive
+    initialDelay: 20
+    timeout: 1
+    periodSeconds: 5
+    failureThreshold: 10
+  readiness:
+    path: modiaeventdistribution/internal/isReady
+    initialDelay: 20
+    timeout: 1
+  replicas:
+    min: 2
+    max: 6
+    cpuThresholdPercentage: 60
+  prometheus:
+    enabled: true
+    path: modiaeventdistribution/internal/metrics
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 1024Mi
+    requests:
+      cpu: 600m
+      memory: 512Mi
+  ingresses:
+    - https://veilederflatehendelser-q6.adeo.no
+  vault:
+    enabled: true
+    paths:
+      - kvPath: /serviceuser/data/dev/srvmodiaeventdistribution
+        mountPath: /var/run/secrets/nais.io/service_user
+      - kvPath: /apikey/appdynamics/dev
+        mountPath: /var/run/secrets/nais.io/appdynamics
+  env:
+    - name: EVENTS_API_URL
+      value: "https://modiacontextholder-q6.nais.preprod.local/modiacontextholder/api/events"
+    - name: KAFKA_BROKERS_URL
+      value: "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443"
+    - name: APP_ENVIRONMENT_NAME
+      value: "q6"
