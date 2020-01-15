@@ -33,6 +33,7 @@ spec:
       cpu: 600m
       memory: 512Mi
   ingresses:
+    - https://modiaeventdistribution.nais.adeo.no/modiaeventdistribution
     - https://veilederflatehendelser.adeo.no
   vault:
     enabled: true
