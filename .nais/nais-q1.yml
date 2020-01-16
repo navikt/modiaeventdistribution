@@ -34,7 +34,7 @@ spec:
       memory: 512Mi
   ingresses:
     - https://modiaeventdistribution-q1.nais.preprod.local/modiaeventdistribution
-    - https://veilederflatehendelser-q1.adeo.no
+    - https://veilederflatehendelser-q1.adeo.no/modiaeventdistribution
   vault:
     enabled: true
     paths:
