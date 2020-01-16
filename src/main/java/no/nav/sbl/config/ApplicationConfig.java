@@ -47,11 +47,6 @@ public class ApplicationConfig implements ApiApplication {
     }
 
     @Override
-    public boolean brukSTSHelsesjekk() {
-        return false;
-    }
-
-    @Override
     public void configure(ApiAppConfigurator apiAppConfigurator) {
         apiAppConfigurator.customizeJettyBuilder(jettyBuilder -> jettyBuilder.websocketEndpoint(WebSocketProvider.class));
         apiAppConfigurator.selfTests(kafkaConsumers.getKafkaConsumers());

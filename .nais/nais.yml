@@ -1,0 +1,51 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: modiaeventdistribution
+  namespace: default
+  labels:
+    team: personoversikt
+spec:
+  image: {{ image }}
+  port: 8080
+  liveness:
+    path: modiaeventdistribution/internal/isAlive
+    initialDelay: 20
+    timeout: 1
+    periodSeconds: 5
+    failureThreshold: 10
+  readiness:
+    path: modiaeventdistribution/internal/isReady
+    initialDelay: 20
+    timeout: 1
+  replicas:
+    min: 4
+    max: 6
+    cpuThresholdPercentage: 60
+  prometheus:
+    enabled: true
+    path: modiaeventdistribution/internal/metrics
+  resources:
+    limits:
+      cpu: 3000m
+      memory: 1024Mi
+    requests:
+      cpu: 600m
+      memory: 512Mi
+  ingresses:
+    - https://modiaeventdistribution.nais.adeo.no/modiaeventdistribution
+    - https://veilederflatehendelser.adeo.no
+  vault:
+    enabled: true
+    paths:
+      - kvPath: /serviceuser/data/prod/srvmodiaeventdistribution
+        mountPath: /var/run/secrets/nais.io/service_user
+      - kvPath: /apikey/appdynamics/prod
+        mountPath: /var/run/secrets/nais.io/appdynamics
+  env:
+    - name: EVENTS_API_URL
+      value: "https://modiacontextholder.nais.adeo.no/modiacontextholder/api/events"
+    - name: KAFKA_BROKERS_URL
+      value: "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443"
+    - name: APP_ENVIRONMENT_NAME
+      value: "p"
