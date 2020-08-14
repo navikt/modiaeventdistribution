@@ -4,6 +4,9 @@ import dev.nohus.autokonfig.*
 import dev.nohus.autokonfig.types.IntSetting
 import dev.nohus.autokonfig.types.StringSetting
 import no.nav.common.utils.NaisUtils
+import java.io.IOException
+import java.util.*
+import java.util.Collections.singletonMap
 
 fun AutoKonfig.withVaultCredentials(secretName: String) = apply {
     try {
@@ -18,6 +21,23 @@ fun AutoKonfig.withVaultCredentials(secretName: String) = apply {
     } catch (e: Throwable){}
 }
 
+fun AutoKonfig.withProperties(file: String) = apply {
+    val stream = Config::class.java.classLoader.getResourceAsStream(file)
+            ?: throw RuntimeException("Resource file (${file}) not found")
+
+    val properties = try {
+        Properties().apply { load(stream) }
+    } catch (e: IOException) {
+        throw RuntimeException("Could not read file (${file})")
+    }
+
+    withProperties(properties, "properties file ($file)")
+}
+
+fun AutoKonfig.withProperty(key: String, value: String) = apply {
+    withMap(singletonMap(key, value))
+}
+
 class Config internal constructor() {
     val appname by StringSetting(default = "modiaeventdistribution")
     val appEnvironmentName by StringSetting()
@@ -28,14 +48,14 @@ class Config internal constructor() {
     val port by IntSetting(8080)
 }
 
-class ConfigLoader(extraProps: Map<String, String> = emptyMap()) {
+class ConfigLoader(block: AutoKonfig.() -> Unit = {}) {
     init {
         AutoKonfig
                 .clear()
                 .withSystemProperties()
                 .withEnvironmentVariables()
                 .withVaultCredentials("service_user")
-                .withMap(extraProps)
+                .apply(block)
     }
 
     fun load() = Config()
