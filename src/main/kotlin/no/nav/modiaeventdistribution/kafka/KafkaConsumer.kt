@@ -108,7 +108,6 @@ class KafkaConsumer(
             try {
                 val records: ConsumerRecords<String?, String?> = this.consumer.poll(POLL_TIMEOUT)
                 runBlocking {
-                    log.info("Received kafka-messages: ${records.count()}")
                     for (record in records) {
                         handler(record.key(), record.value())
                     }
