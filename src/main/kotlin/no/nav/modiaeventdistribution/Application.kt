@@ -12,7 +12,6 @@ import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
-import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
@@ -41,8 +40,7 @@ fun startApplication(config: Config) {
                     JvmMemoryMetrics(),
                     JvmGcMetrics(),
                     ProcessorMetrics(),
-                    JvmThreadMetrics(),
-                    FileDescriptorMetrics()
+                    JvmThreadMetrics()
             )
         }
 
@@ -53,7 +51,8 @@ fun startApplication(config: Config) {
                         livenessCheck = { applicationState.running },
                         selftestChecks = listOf(
                                 *kafkaConsumers.consumers.map{ it.getHealthCheck() }.toTypedArray()
-                        )
+                        ),
+                        collectorRegistry = metricsRegistry
                 )
 
                 webSocket(path = "/ws/{ident}", handler = websocketStorage.wsHandler)

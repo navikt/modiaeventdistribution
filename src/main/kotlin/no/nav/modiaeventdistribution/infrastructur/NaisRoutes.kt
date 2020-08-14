@@ -4,11 +4,10 @@ import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respondText
-import io.ktor.response.respondTextWriter
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
-import io.prometheus.client.CollectorRegistry
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +19,7 @@ fun Route.naisRoutes(
         readinessCheck: () -> Boolean,
         livenessCheck: () -> Boolean = { true },
         selftestChecks: List<SelfTestCheck> = emptyList(),
-        collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
+        collectorRegistry: PrometheusMeterRegistry
 ) {
     route("internal") {
         get("/isAlive") {
@@ -40,10 +39,10 @@ fun Route.naisRoutes(
         }
 
         get("/metrics") {
-            val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
-            call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
-                TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
-            }
+            call.respondText(
+                    contentType = ContentType.parse(TextFormat.CONTENT_TYPE_004),
+                    text = collectorRegistry.scrape()
+            )
         }
 
         get("/selftest") {
