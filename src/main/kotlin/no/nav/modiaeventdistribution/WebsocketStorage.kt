@@ -27,7 +27,7 @@ class WebsocketStorage {
     val wsHandler: suspend DefaultWebSocketServerSession.() -> Unit = {
         val ident = (call.parameters["ident"] ?: throw BadRequestException("No ident found"))
         try {
-            sessions.putIfAbsent(ident, mutableListOf())!!.add(this)
+            sessions.computeIfAbsent(ident) { mutableListOf() }.add(this)
             incoming.receive() // Waiting so that the connection isn't closed at once
         } catch (e: Throwable) {
             log.error("Websocket error", e)
