@@ -3,9 +3,9 @@ package no.nav.modiaeventdistribution.kafka
 import kotlinx.coroutines.runBlocking
 import no.nav.common.health.HealthCheckResult
 import no.nav.common.health.selftest.SelfTestCheck
+import no.nav.modiaeventdistribution.Config
 import no.nav.modiaeventdistribution.infrastructur.HealthCheckAware
 import no.nav.modiaeventdistribution.log
-import no.nav.modiaeventdistribution.Config
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.ConsumerRecords
@@ -39,12 +39,12 @@ internal val ERROR_GRACE_PERIODE = Duration.ofMinutes(5).toMillis()
 internal val POLL_TIMEOUT = Duration.ofSeconds(5)
 
 class KafkaConsumer(
-        private val config: Config,
-        private val topicName: String,
-        private val groupId: String,
-        private val bootstrapServers: List<BootstrapServer>,
-        private val username: String,
-        private val password: String,
+        config: Config,
+        topicName: String,
+        groupId: String,
+        bootstrapServers: List<BootstrapServer>,
+        username: String,
+        password: String,
         private val handler: suspend (key: String?, value: String?) -> Unit
 ) : HealthCheckAware {
     private val healthCheckData: SelfTestCheck
@@ -61,15 +61,20 @@ class KafkaConsumer(
     private var lastError: Throwable? = null
 
     init {
-        val bootstrapServers = bootstrapServers.joinToString(",") { (host, port) -> "$host:$port" }
+        val bootstrapServersString = bootstrapServers.joinToString(",") { (host, port) -> "$host:$port" }
         this.topicNameWithEnv = "${topicName}-${config.appEnvironment}"
-        this.healthCheckData = SelfTestCheck("kafka-consumer-${this.topicNameWithEnv}",false) {
-            this.checkHealth()
-        }
+        this.healthCheckData = SelfTestCheck(
+                """
+                    topic: ${this.topicNameWithEnv}
+                    groupId: ${groupId}
+                    server: $bootstrapServersString
+                """.trimIndent()
+                , false
+        ) { this.checkHealth() }
 
 
         val props = Properties()
-        props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
+        props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServersString
         props[ConsumerConfig.GROUP_ID_CONFIG] = groupId
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java.name
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java.name
@@ -85,11 +90,11 @@ class KafkaConsumer(
 
     fun start() {
         this.running = true
-        log.info("starting kafka consumer for topic {}", topicName)
-        this.consumer.subscribe(setOf(topicName))
+        log.info("starting kafka consumer for topic {}", topicNameWithEnv)
+        this.consumer.subscribe(setOf(topicNameWithEnv))
 
         val thread = Thread(Runnable { this.run() })
-        thread.name = "consumer-$topicName"
+        thread.name = "consumer-$topicNameWithEnv"
         thread.isDaemon = true
         thread.start()
     }
