@@ -7,6 +7,7 @@ import io.ktor.websocket.DefaultWebSocketServerSession
 import io.ktor.websocket.WebSocketServerSession
 import io.ktor.websocket.WebSockets
 import io.micrometer.core.instrument.Gauge
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import no.nav.modiaeventdistribution.infrastructur.fromJson
 import java.time.Duration
 
@@ -29,6 +30,8 @@ class WebsocketStorage {
         try {
             sessions.computeIfAbsent(ident) { mutableListOf() }.add(this)
             incoming.receive() // Waiting so that the connection isn't closed at once
+        } catch (e: ClosedReceiveChannelException) {
+            // This is expected when the channel is closed, `finally`-block will remove the session
         } catch (e: Throwable) {
             log.error("Websocket error", e)
         } finally {
