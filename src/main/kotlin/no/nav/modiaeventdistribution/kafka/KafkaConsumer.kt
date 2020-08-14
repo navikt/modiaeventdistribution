@@ -47,9 +47,7 @@ class KafkaConsumer(
         private val password: String,
         private val handler: suspend (key: String?, value: String?) -> Unit
 ) : HealthCheckAware {
-    private val healthCheckData = SelfTestCheck("kafka-consumer-${topicName}",false) {
-        this.checkHealth()
-    }
+    private val healthCheckData: SelfTestCheck
     private val consumer: org.apache.kafka.clients.consumer.KafkaConsumer<String, String>
     private val topicNameWithEnv: String
 
@@ -65,6 +63,10 @@ class KafkaConsumer(
     init {
         val bootstrapServers = bootstrapServers.joinToString(",") { (host, port) -> "$host:$port" }
         this.topicNameWithEnv = "${topicName}-${config.appEnvironmentName}"
+        this.healthCheckData = SelfTestCheck("kafka-consumer-${this.topicNameWithEnv}",false) {
+            this.checkHealth()
+        }
+
 
         val props = Properties()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
@@ -101,6 +103,7 @@ class KafkaConsumer(
             try {
                 val records: ConsumerRecords<String?, String?> = this.consumer.poll(POLL_TIMEOUT)
                 runBlocking {
+                    log.info("Received kafka-messages: ${records.count()}")
                     for (record in records) {
                         handler(record.key(), record.value())
                     }
