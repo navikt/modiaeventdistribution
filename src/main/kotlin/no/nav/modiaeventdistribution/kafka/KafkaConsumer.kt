@@ -23,7 +23,7 @@ data class BootstrapServer internal constructor(
         fun parse(configString: String): List<BootstrapServer> {
             return configString.split(",")
                     .map {
-                        val (host, port) = it.split(".")
+                        val (host, port) = it.split(":")
                         BootstrapServer(host, port.toInt())
                     }
         }

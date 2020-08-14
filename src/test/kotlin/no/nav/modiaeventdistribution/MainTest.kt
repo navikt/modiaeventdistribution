@@ -4,7 +4,9 @@ import no.nav.common.nais.NaisYamlUtils
 
 
 fun main() {
-    NaisYamlUtils.loadFromYaml(".nais/nais-q0.yml")
+    NaisYamlUtils
+            .getTemplatedConfig(".nais/qa-template.yml", mapOf("namespace" to "q0"))
+            .also(NaisYamlUtils::loadFromYaml)
     val config = ConfigLoader{
         withProperties(".vault.properties")
         withProperty("port", "8081")
