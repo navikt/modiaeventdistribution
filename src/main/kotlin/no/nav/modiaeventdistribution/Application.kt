@@ -56,7 +56,7 @@ fun startApplication(config: Config) {
                         )
                 )
 
-                webSocket("/ws/{ident}", websocketStorage.wsHandler)
+                webSocket(path = "/ws/{ident}", handler = websocketStorage.wsHandler)
             }
         }
 
