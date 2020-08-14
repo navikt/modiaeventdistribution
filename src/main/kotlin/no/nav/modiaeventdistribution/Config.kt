@@ -39,8 +39,9 @@ fun AutoKonfig.withProperty(key: String, value: String) = apply {
 }
 
 class Config internal constructor() {
-    val appname by StringSetting(default = "modiaeventdistribution")
-    val appEnvironmentName by StringSetting()
+    val appName by StringSetting()
+    val appEnvironment by StringSetting()
+    val appVersion by StringSetting()
     val eventsApiUrl by StringSetting()
     val kafkaBrokersUrl by StringSetting()
     val serviceUserUsername by StringSetting()

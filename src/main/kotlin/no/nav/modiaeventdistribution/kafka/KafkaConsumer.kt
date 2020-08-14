@@ -62,7 +62,7 @@ class KafkaConsumer(
 
     init {
         val bootstrapServers = bootstrapServers.joinToString(",") { (host, port) -> "$host:$port" }
-        this.topicNameWithEnv = "${topicName}-${config.appEnvironmentName}"
+        this.topicNameWithEnv = "${topicName}-${config.appEnvironment}"
         this.healthCheckData = SelfTestCheck("kafka-consumer-${this.topicNameWithEnv}",false) {
             this.checkHealth()
         }

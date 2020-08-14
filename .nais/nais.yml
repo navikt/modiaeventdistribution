@@ -43,9 +43,13 @@ spec:
       - kvPath: /apikey/appdynamics/prod
         mountPath: /var/run/secrets/nais.io/appdynamics
   env:
+    - name: APP_NAME
+      value: "modiaeventdistribution"
+    - name: APP_VERSION
+      value: "{{ version }}"
+    - name: APP_ENVIRONMENT
+      value: "p"
     - name: EVENTS_API_URL
       value: "https://modiacontextholder.nais.adeo.no/modiacontextholder/api/events"
     - name: KAFKA_BROKERS_URL
       value: "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443"
-    - name: APP_ENVIRONMENT_NAME
-      value: "p"
