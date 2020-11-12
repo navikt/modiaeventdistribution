@@ -35,6 +35,7 @@ spec:
   ingresses:
     - https://modiaeventdistribution-{{ namespace }}.nais.preprod.local/modiaeventdistribution
     - https://veilederflatehendelser-{{ namespace }}.adeo.no/modiaeventdistribution
+    - https://veilederflatehendelser-{{ namespace }}.dev.adeo.no/modiaeventdistribution
   vault:
     enabled: true
     paths:
