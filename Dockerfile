@@ -1,4 +1,4 @@
-FROM maven:3.6.1-jdk-8-alpine as builder
+FROM maven:3.6.1-jdk-11-slim as builder
 
 # sett riktig tidssone
 ENV TZ Europe/Oslo
@@ -8,6 +8,7 @@ ADD / /source
 WORKDIR /source
 RUN mvn package -DskipTests
 
-FROM navikt/java:8-appdynamics
+FROM navikt/java:11-appdynamics
 ENV APPD_ENABLED=true
-COPY --from=builder /source/target/modiaeventdistribution /app
+COPY java-debug.sh /init-scripts/08-java-debug.sh
+COPY --from=builder /source/target/modiaeventdistribution-jar-with-dependencies.jar app.jar
