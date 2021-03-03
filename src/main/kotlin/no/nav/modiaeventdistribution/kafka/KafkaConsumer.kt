@@ -16,16 +16,16 @@ import java.time.Duration
 import java.util.*
 
 data class BootstrapServer internal constructor(
-        val host: String,
-        val port: Int
+    val host: String,
+    val port: Int
 ) {
     companion object {
         fun parse(configString: String): List<BootstrapServer> {
             return configString.split(",")
-                    .map {
-                        val (host, port) = it.split(":")
-                        BootstrapServer(host, port.toInt())
-                    }
+                .map {
+                    val (host, port) = it.split(":")
+                    BootstrapServer(host, port.toInt())
+                }
         }
     }
 }
@@ -39,13 +39,13 @@ internal val ERROR_GRACE_PERIODE = Duration.ofMinutes(5).toMillis()
 internal val POLL_TIMEOUT = Duration.ofSeconds(5)
 
 class KafkaConsumer(
-        config: Config,
-        topicName: String,
-        groupId: String,
-        bootstrapServers: List<BootstrapServer>,
-        username: String,
-        password: String,
-        private val handler: suspend (key: String?, value: String?) -> Unit
+    config: Config,
+    topicName: String,
+    groupId: String,
+    bootstrapServers: List<BootstrapServer>,
+    username: String,
+    password: String,
+    private val handler: suspend (key: String?, value: String?) -> Unit
 ) : HealthCheckAware {
     private val healthCheckData: SelfTestCheck
     private val consumer: org.apache.kafka.clients.consumer.KafkaConsumer<String, String>
@@ -62,16 +62,15 @@ class KafkaConsumer(
 
     init {
         val bootstrapServersString = bootstrapServers.joinToString(",") { (host, port) -> "$host:$port" }
-        this.topicNameWithEnv = "${topicName}-${config.appEnvironment}"
+        this.topicNameWithEnv = "$topicName-${config.appEnvironment}"
         this.healthCheckData = SelfTestCheck(
-                """
+            """
                     topic: ${this.topicNameWithEnv}
-                    groupId: ${groupId}
+                    groupId: $groupId
                     server: $bootstrapServersString
-                """.trimIndent()
-                , false
+            """.trimIndent(),
+            false
         ) { this.checkHealth() }
-
 
         val props = Properties()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServersString
@@ -80,10 +79,11 @@ class KafkaConsumer(
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java.name
         props[CommonClientConfigs.SECURITY_PROTOCOL_CONFIG] = "SASL_SSL"
         props["sasl.mechanism"] = "PLAIN"
-        props[SaslConfigs.SASL_JAAS_CONFIG] = String.format("%s required username=\"%s\" password=\"%s\";",
-                PlainLoginModule::class.java.name,
-                username,
-                password
+        props[SaslConfigs.SASL_JAAS_CONFIG] = String.format(
+            "%s required username=\"%s\" password=\"%s\";",
+            PlainLoginModule::class.java.name,
+            username,
+            password
         )
         this.consumer = org.apache.kafka.clients.consumer.KafkaConsumer(props)
     }
