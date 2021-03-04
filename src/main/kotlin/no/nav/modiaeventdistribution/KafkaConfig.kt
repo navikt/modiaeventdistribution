@@ -9,18 +9,20 @@ fun setupKafkaConsumers(config: Config, websocketStorage: WebsocketStorage): Kaf
     val bootstrapServer = BootstrapServer.parse(config.kafkaBrokersUrl)
     val kafkaConsumer = { topicName: String ->
         KafkaConsumer(
-                config = config,
-                topicName = topicName,
-                bootstrapServers = bootstrapServer,
-                groupId = UUID.randomUUID().toString(),
-                username = config.serviceUserUsername,
-                password = config.serviceUserPassword,
-                handler = websocketStorage::kafkaHandler
+            config = config,
+            topicName = topicName,
+            bootstrapServers = bootstrapServer,
+            groupId = UUID.randomUUID().toString(),
+            username = config.serviceUserUsername,
+            password = config.serviceUserPassword,
+            handler = websocketStorage::kafkaHandler
         )
     }
 
-    return KafkaConsumers(listOf(
+    return KafkaConsumers(
+        listOf(
             kafkaConsumer("aapen-modia-nyAktivBruker-v1"),
             kafkaConsumer("aapen-modia-nyAktivEnhet-v1")
-    ))
+        )
+    )
 }

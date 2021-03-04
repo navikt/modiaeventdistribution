@@ -16,10 +16,10 @@ import no.nav.common.health.selftest.SelfTestUtils
 import no.nav.common.health.selftest.SelftestHtmlGenerator
 
 fun Route.naisRoutes(
-        readinessCheck: () -> Boolean,
-        livenessCheck: () -> Boolean = { true },
-        selftestChecks: List<SelfTestCheck> = emptyList(),
-        collectorRegistry: PrometheusMeterRegistry
+    readinessCheck: () -> Boolean,
+    livenessCheck: () -> Boolean = { true },
+    selftestChecks: List<SelfTestCheck> = emptyList(),
+    collectorRegistry: PrometheusMeterRegistry
 ) {
     route("internal") {
         get("/isAlive") {
@@ -40,8 +40,8 @@ fun Route.naisRoutes(
 
         get("/metrics") {
             call.respondText(
-                    contentType = ContentType.parse(TextFormat.CONTENT_TYPE_004),
-                    text = collectorRegistry.scrape()
+                contentType = ContentType.parse(TextFormat.CONTENT_TYPE_004),
+                text = collectorRegistry.scrape()
             )
         }
 

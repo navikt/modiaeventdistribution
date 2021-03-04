@@ -20,8 +20,8 @@ class WebsocketStorage {
 
     init {
         Gauge
-                .builder("websocket_clients", this::getAntallTilkoblinger)
-                .register(metricsRegistry)
+            .builder("websocket_clients", this::getAntallTilkoblinger)
+            .register(metricsRegistry)
     }
 
     val sessions = mutableMapOf<String, MutableList<WebSocketServerSession>>()
@@ -40,9 +40,9 @@ class WebsocketStorage {
     }
 
     fun getAntallTilkoblinger(): Int = sessions
-            .values
-            .map { it.size }
-            .sum()
+        .values
+        .map { it.size }
+        .sum()
 
     suspend fun kafkaHandler(key: String?, value: String?) {
         if (value == null) {
