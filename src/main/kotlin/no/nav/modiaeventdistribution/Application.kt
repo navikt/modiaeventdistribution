@@ -17,13 +17,12 @@ import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.modiaeventdistribution.infrastructur.naisRoutes
 
-
 val metricsRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 data class Event(
-        val id: Long,
-        val veilederIdent: String,
-        val eventType: String
+    val id: Long,
+    val veilederIdent: String,
+    val eventType: String
 )
 
 fun startApplication(config: Config) {
@@ -36,23 +35,23 @@ fun startApplication(config: Config) {
         install(MicrometerMetrics) {
             registry = metricsRegistry
             meterBinders = listOf(
-                    ClassLoaderMetrics(),
-                    JvmMemoryMetrics(),
-                    JvmGcMetrics(),
-                    ProcessorMetrics(),
-                    JvmThreadMetrics()
+                ClassLoaderMetrics(),
+                JvmMemoryMetrics(),
+                JvmGcMetrics(),
+                ProcessorMetrics(),
+                JvmThreadMetrics()
             )
         }
 
         routing {
             route(config.appName) {
                 naisRoutes(
-                        readinessCheck = { applicationState.initialized },
-                        livenessCheck = { applicationState.running },
-                        selftestChecks = listOf(
-                                *kafkaConsumers.consumers.map{ it.getHealthCheck() }.toTypedArray()
-                        ),
-                        collectorRegistry = metricsRegistry
+                    readinessCheck = { applicationState.initialized },
+                    livenessCheck = { applicationState.running },
+                    selftestChecks = listOf(
+                        *kafkaConsumers.consumers.map { it.getHealthCheck() }.toTypedArray()
+                    ),
+                    collectorRegistry = metricsRegistry
                 )
 
                 webSocket(path = "/ws/{ident}", handler = websocketStorage.wsHandler)
@@ -63,12 +62,14 @@ fun startApplication(config: Config) {
         applicationState.initialized = true
     }
 
-    Runtime.getRuntime().addShutdownHook(Thread {
-        log.info("Shutdown hook called, shutting down gracefully")
-        kafkaConsumers.stop()
-        applicationState.initialized = false
-        applicationServer.stop(5000, 5000)
-    })
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            log.info("Shutdown hook called, shutting down gracefully")
+            kafkaConsumers.stop()
+            applicationState.initialized = false
+            applicationServer.stop(5000, 5000)
+        }
+    )
 
     applicationServer.start(wait = true)
 }
