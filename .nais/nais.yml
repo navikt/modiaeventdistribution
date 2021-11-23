@@ -42,7 +42,7 @@ spec:
       - kvPath: /serviceuser/data/prod/srvmodiaeventdistribution
         mountPath: /var/run/secrets/nais.io/service_user
       - kvPath: /apikey/appdynamics/prod
-        mountPath: /var/run/secrets/nais.io/appdynamics
+        mountPath: /var/run/secrets/nais.io/vault
   env:
     - name: APP_NAME
       value: "modiaeventdistribution"
