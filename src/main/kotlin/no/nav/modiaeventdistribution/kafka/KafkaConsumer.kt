@@ -1,5 +1,8 @@
 package no.nav.modiaeventdistribution.kafka
 
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.runBlocking
 import no.nav.common.health.HealthCheckResult
 import no.nav.common.health.selftest.SelfTestCheck
@@ -33,6 +36,7 @@ data class BootstrapServer internal constructor(
 data class KafkaConsumers(val consumers: List<KafkaConsumer>) {
     fun start() = consumers.forEach(KafkaConsumer::start)
     fun stop() = consumers.forEach(KafkaConsumer::stop)
+    fun getFlow() = consumers.map(KafkaConsumer::getFlow).merge()
 }
 
 internal val ERROR_GRACE_PERIODE = Duration.ofMinutes(5).toMillis()
@@ -44,12 +48,12 @@ class KafkaConsumer(
     groupId: String,
     bootstrapServers: List<BootstrapServer>,
     username: String,
-    password: String,
-    private val handler: suspend (key: String?, value: String?) -> Unit
+    password: String
 ) : HealthCheckAware {
     private val healthCheckData: SelfTestCheck
     private val consumer: org.apache.kafka.clients.consumer.KafkaConsumer<String, String>
     private val topicNameWithEnv: String
+    private val channelReference = Channel<String?>()
 
     @Volatile
     private var running = false
@@ -87,6 +91,8 @@ class KafkaConsumer(
         )
         this.consumer = org.apache.kafka.clients.consumer.KafkaConsumer(props)
     }
+    
+    fun getFlow() = channelReference.consumeAsFlow()
 
     fun start() {
         this.running = true
@@ -109,7 +115,7 @@ class KafkaConsumer(
                 val records: ConsumerRecords<String?, String?> = this.consumer.poll(POLL_TIMEOUT)
                 runBlocking {
                     for (record in records) {
-                        handler(record.key(), record.value())
+                        channelReference.send(record.value())
                     }
                 }
                 this.consumer.commitAsync()

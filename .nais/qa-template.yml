@@ -55,3 +55,5 @@ spec:
       value: "https://modiacontextholder-{{ namespace }}.nais.preprod.local/modiacontextholder/api/events"
     - name: KAFKA_BROKERS_URL
       value: "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443"
+    - name: REDIS_HOST
+      value: "modiacontextholder-redis.personoversikt.svc.nais.local"

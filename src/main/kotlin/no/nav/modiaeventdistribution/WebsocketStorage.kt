@@ -7,24 +7,30 @@ import io.ktor.websocket.DefaultWebSocketServerSession
 import io.ktor.websocket.WebSocketServerSession
 import io.ktor.websocket.WebSockets
 import io.micrometer.core.instrument.Gauge
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import no.nav.modiaeventdistribution.infrastructur.fromJson
 import java.time.Duration
 
-class WebsocketStorage {
+class WebsocketStorage(private val flow: Flow<String?>) {
     companion object {
         val options: WebSockets.WebSocketOptions.() -> Unit = {
             pingPeriod = Duration.ofMinutes(3)
         }
     }
-
+    
     init {
         Gauge
             .builder("websocket_clients", this::getAntallTilkoblinger)
             .register(metricsRegistry)
+        GlobalScope.launch { propagateMessageToWebsocket() }
     }
-
-    val sessions = mutableMapOf<String, MutableList<WebSocketServerSession>>()
+    
+    private val sessions = mutableMapOf<String, MutableList<WebSocketServerSession>>()
     val wsHandler: suspend DefaultWebSocketServerSession.() -> Unit = {
         val ident = (call.parameters["ident"] ?: throw BadRequestException("No ident found"))
         try {
@@ -38,24 +44,22 @@ class WebsocketStorage {
             sessions[ident]?.remove(this)
         }
     }
-
-    fun getAntallTilkoblinger(): Int = sessions
+    
+    private fun getAntallTilkoblinger(): Int = sessions
         .values
         .map { it.size }
         .sum()
-
-    suspend fun kafkaHandler(key: String?, value: String?) {
-        if (value == null) {
-            log.error("Empty kafka-message")
-            return
-        }
-
-        val event = value.fromJson<Event>()
-        val (id, veilederIdent, eventType) = event
-        log.info("Sending $eventType to $veilederIdent")
-
-        sessions[veilederIdent]?.forEach {
-            it.send(Frame.Text(eventType))
+    
+    private suspend fun propagateMessageToWebsocket() {
+        flow.filterNotNull().collect { value ->
+            val event = value.fromJson<Event>()
+            val (_, veilederIdent, eventType) = event
+            log.info("Sending $eventType to $veilederIdent")
+            
+            sessions[veilederIdent]?.forEach {
+                it.send(Frame.Text(eventType))
+            }
         }
     }
+    
 }
