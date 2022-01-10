@@ -16,6 +16,7 @@ import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.modiaeventdistribution.infrastructur.naisRoutes
+import no.nav.modiaeventdistribution.redis.setupRedis
 
 val metricsRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
@@ -29,6 +30,7 @@ fun startApplication(config: Config) {
     val applicationState = ApplicationState()
     val websocketStorage = WebsocketStorage()
     val kafkaConsumers = setupKafkaConsumers(config, websocketStorage)
+    val redisConsumer = setupRedis(websocketStorage)
 
     val applicationServer = embeddedServer(Netty, config.port) {
         install(WebSockets, WebsocketStorage.options)
@@ -49,7 +51,8 @@ fun startApplication(config: Config) {
                     readinessCheck = { applicationState.initialized },
                     livenessCheck = { applicationState.running },
                     selftestChecks = listOf(
-                        *kafkaConsumers.consumers.map { it.getHealthCheck() }.toTypedArray()
+                        *kafkaConsumers.consumers.map { it.getHealthCheck() }.toTypedArray(),
+                        redisConsumer.getHealthCheck()
                     ),
                     collectorRegistry = metricsRegistry
                 )
@@ -59,6 +62,7 @@ fun startApplication(config: Config) {
         }
 
         kafkaConsumers.start()
+        redisConsumer.start()
         applicationState.initialized = true
     }
 
@@ -66,6 +70,7 @@ fun startApplication(config: Config) {
         Thread {
             log.info("Shutdown hook called, shutting down gracefully")
             kafkaConsumers.stop()
+            redisConsumer.stop()
             applicationState.initialized = false
             applicationServer.stop(5000, 5000)
         }

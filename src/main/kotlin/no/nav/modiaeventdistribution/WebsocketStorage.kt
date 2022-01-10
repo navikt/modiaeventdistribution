@@ -45,17 +45,27 @@ class WebsocketStorage {
         .sum()
 
     suspend fun kafkaHandler(key: String?, value: String?) {
+        messageHandler(key, value, "kafka")
+    }
+    
+    suspend fun redisHandler(key: String?, value: String?) {
+        messageHandler(key, value, "redis", false)
+    }
+    
+    private suspend fun messageHandler(key: String?, value: String?, consumerType: String, shouldSendToWS: Boolean = true) {
         if (value == null) {
-            log.error("Empty kafka-message")
+            log.error("Empty $consumerType-message")
             return
         }
-
+    
         val event = value.fromJson<Event>()
-        val (id, veilederIdent, eventType) = event
-        log.info("Sending $eventType to $veilederIdent")
-
-        sessions[veilederIdent]?.forEach {
-            it.send(Frame.Text(eventType))
+        val (_, veilederIdent, eventType) = event
+        log.info("Sending $eventType to $veilederIdent using $consumerType")
+        
+        if (shouldSendToWS) {
+            sessions[veilederIdent]?.forEach {
+                it.send(Frame.Text(eventType))
+            }
         }
     }
 }
