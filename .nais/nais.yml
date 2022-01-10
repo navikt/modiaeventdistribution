@@ -54,3 +54,5 @@ spec:
       value: "https://modiacontextholder.nais.adeo.no/modiacontextholder/api/events"
     - name: KAFKA_BROKERS_URL
       value: "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443"
+    - name: REDIS_HOST
+      value: "modiacontextholder-redis.personoversikt.svc.nais.local"

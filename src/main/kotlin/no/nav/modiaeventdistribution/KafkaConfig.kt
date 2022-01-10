@@ -5,7 +5,7 @@ import no.nav.modiaeventdistribution.kafka.KafkaConsumer
 import no.nav.modiaeventdistribution.kafka.KafkaConsumers
 import java.util.*
 
-fun setupKafkaConsumers(config: Config, websocketStorage: WebsocketStorage): KafkaConsumers {
+fun setupKafkaConsumers(config: Config): KafkaConsumers {
     val bootstrapServer = BootstrapServer.parse(config.kafkaBrokersUrl)
     val kafkaConsumer = { topicName: String ->
         KafkaConsumer(
@@ -14,8 +14,7 @@ fun setupKafkaConsumers(config: Config, websocketStorage: WebsocketStorage): Kaf
             bootstrapServers = bootstrapServer,
             groupId = UUID.randomUUID().toString(),
             username = config.serviceUserUsername,
-            password = config.serviceUserPassword,
-            handler = websocketStorage::kafkaHandler
+            password = config.serviceUserPassword
         )
     }
 

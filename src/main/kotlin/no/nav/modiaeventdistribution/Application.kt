@@ -15,6 +15,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import kotlinx.coroutines.flow.merge
 import no.nav.modiaeventdistribution.infrastructur.naisRoutes
 import no.nav.modiaeventdistribution.redis.setupRedis
 
@@ -28,9 +29,9 @@ data class Event(
 
 fun startApplication(config: Config) {
     val applicationState = ApplicationState()
-    val websocketStorage = WebsocketStorage()
-    val kafkaConsumers = setupKafkaConsumers(config, websocketStorage)
-    val redisConsumer = setupRedis(websocketStorage)
+    val kafkaConsumers = setupKafkaConsumers(config)
+    val redisConsumer = setupRedis()
+    val websocketStorage = WebsocketStorage(listOf(kafkaConsumers.getFlow(), redisConsumer.getFlow()).merge())
 
     val applicationServer = embeddedServer(Netty, config.port) {
         install(WebSockets, WebsocketStorage.options)

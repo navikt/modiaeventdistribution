@@ -1,6 +1,8 @@
 package no.nav.modiaeventdistribution.redis
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.consumeAsFlow
 import no.nav.common.health.HealthCheckResult
 import no.nav.common.health.selftest.SelfTestCheck
 import no.nav.common.utils.EnvironmentUtils
@@ -19,23 +21,27 @@ object Redis {
     
     class Consumer(
         private val hostAndPort: HostAndPort,
-        private val handler: suspend (key: String?, value: String?) -> Unit,
         private val channel: String = getChannel()
     ) : HealthCheckAware {
         
         private var running = false
         private var thread: Thread? = null
         private var jedis: Jedis? = null
+        private val channelReference = Channel<String?>()
         
         private val subscriber = object:JedisPubSub() {
             override fun onMessage(channel: String?, message: String?) {
-                runBlocking { handler(channel, message) }
+                runBlocking {
+                    channelReference.send(message)
+                }
                 log.info("""
                         Redismelding mottatt på kanal '$channel' med melding:
                         ${message.toJson()}
                         """.trimIndent())
             }
         }
+        
+        fun getFlow() = channelReference.consumeAsFlow()
         
         fun start() {
             running = true
@@ -50,6 +56,7 @@ object Redis {
         fun stop() {
             running = false
             subscriber.unsubscribe()
+            channelReference.close()
             thread = null
         }
         
