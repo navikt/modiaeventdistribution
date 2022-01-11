@@ -7,7 +7,6 @@ import no.nav.common.health.HealthCheckResult
 import no.nav.common.health.selftest.SelfTestCheck
 import no.nav.common.utils.EnvironmentUtils
 import no.nav.modiaeventdistribution.infrastructur.HealthCheckAware
-import no.nav.modiaeventdistribution.infrastructur.toJson
 import no.nav.modiaeventdistribution.log
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.Jedis
@@ -36,7 +35,7 @@ object Redis {
                 }
                 log.info("""
                         Redismelding mottatt på kanal '$channel' med melding:
-                        ${message.toJson()}
+                        $message
                         """.trimIndent())
             }
         }
