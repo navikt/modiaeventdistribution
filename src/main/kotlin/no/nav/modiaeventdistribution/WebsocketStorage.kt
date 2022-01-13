@@ -52,12 +52,16 @@ class WebsocketStorage(private val flow: Flow<String?>) {
     
     private suspend fun propagateMessageToWebsocket() {
         flow.filterNotNull().collect { value ->
-            val event = value.fromJson<Event>()
-            val (_, veilederIdent, eventType) = event
-            log.info("Sending $eventType to $veilederIdent")
-            
-            sessions[veilederIdent]?.forEach {
-                it.send(Frame.Text(eventType))
+            try {
+                val event = value.fromJson<Event>()
+                val (id, veilederIdent, eventType) = event
+                log.info("Sending $eventType to $veilederIdent med id '$id'")
+                
+                sessions[veilederIdent]?.forEach {
+                    it.send(Frame.Text(eventType))
+                }
+            } catch (e: Exception ) {
+                log.error("Error propagating message to Websocket: $e")
             }
         }
     }
