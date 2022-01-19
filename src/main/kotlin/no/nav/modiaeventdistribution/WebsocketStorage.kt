@@ -61,7 +61,7 @@ class WebsocketStorage(private val flow: Flow<String?>) {
                     it.send(Frame.Text(eventType))
                 }
             } catch (e: Exception ) {
-                log.error("Error propagating message to Websocket: $e")
+                log.error("Error propagating message to Websocket:", e)
             }
         }
     }
