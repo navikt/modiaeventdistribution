@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import no.nav.modiaeventdistribution.infrastructur.fromJson
 import java.time.Duration
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 
 class WebsocketStorage(private val flow: Flow<String?>) {
     companion object {
@@ -30,7 +32,7 @@ class WebsocketStorage(private val flow: Flow<String?>) {
         GlobalScope.launch { propagateMessageToWebsocket() }
     }
     
-    private val sessions = mutableMapOf<String, MutableList<WebSocketServerSession>>()
+    private val sessions = ConcurrentHashMap<String, MutableList<WebSocketServerSession>>()
     val wsHandler: suspend DefaultWebSocketServerSession.() -> Unit = {
         val ident = (call.parameters["ident"] ?: throw BadRequestException("No ident found"))
         try {
