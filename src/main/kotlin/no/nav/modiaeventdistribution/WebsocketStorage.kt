@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import no.nav.modiaeventdistribution.infrastructur.fromJson
 import java.time.Duration
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 class WebsocketStorage(private val flow: Flow<String?>) {
     companion object {
@@ -62,6 +62,8 @@ class WebsocketStorage(private val flow: Flow<String?>) {
                 sessions[veilederIdent]?.forEach {
                     it.send(Frame.Text(eventType))
                 }
+            } catch (_: CancellationException) {
+                // Ignore these types of errors
             } catch (e: Exception ) {
                 log.error("Error propagating message to Websocket:", e)
             }
