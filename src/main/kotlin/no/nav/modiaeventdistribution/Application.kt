@@ -29,9 +29,8 @@ data class Event(
 
 fun startApplication(config: Config) {
     val applicationState = ApplicationState()
-    val kafkaConsumers = setupKafkaConsumers(config)
     val redisConsumer = setupRedis()
-    val websocketStorage = WebsocketStorage(listOf(kafkaConsumers.getFlow(), redisConsumer.getFlow()).merge())
+    val websocketStorage = WebsocketStorage(redisConsumer.getFlow())
 
     val applicationServer = embeddedServer(Netty, config.port) {
         install(WebSockets, WebsocketStorage.options)
@@ -52,7 +51,6 @@ fun startApplication(config: Config) {
                     readinessCheck = { applicationState.initialized },
                     livenessCheck = { applicationState.running },
                     selftestChecks = listOf(
-                        *kafkaConsumers.consumers.map { it.getHealthCheck() }.toTypedArray(),
                         redisConsumer.getHealthCheck()
                     ),
                     collectorRegistry = metricsRegistry
@@ -62,7 +60,6 @@ fun startApplication(config: Config) {
             }
         }
 
-        kafkaConsumers.start()
         redisConsumer.start()
         applicationState.initialized = true
     }
@@ -70,7 +67,6 @@ fun startApplication(config: Config) {
     Runtime.getRuntime().addShutdownHook(
         Thread {
             log.info("Shutdown hook called, shutting down gracefully")
-            kafkaConsumers.stop()
             redisConsumer.stop()
             applicationState.initialized = false
             applicationServer.stop(5000, 5000)
