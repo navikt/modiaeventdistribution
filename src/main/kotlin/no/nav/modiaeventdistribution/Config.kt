@@ -42,10 +42,6 @@ class Config internal constructor() {
     val appName by StringSetting()
     val appEnvironment by StringSetting()
     val appVersion by StringSetting()
-    val eventsApiUrl by StringSetting()
-    val kafkaBrokersUrl by StringSetting()
-    val serviceUserUsername by StringSetting()
-    val serviceUserPassword by StringSetting()
     val port by IntSetting(8080)
 }
 
