@@ -1,8 +1,8 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: modiaeventdistribution
-  namespace: "{{ namespace }}"
+  name: modiaeventdistribution-{{ namespace }}
+  namespace: personoversikt
   labels:
     team: personoversikt
 spec:
