@@ -39,7 +39,7 @@ spec:
     - https://modiaeventdistribution-{{ namespace }}.nais.preprod.local/modiaeventdistribution
     - https://veilederflatehendelser-{{ namespace }}.adeo.no/modiaeventdistribution
     - https://veilederflatehendelser-{{ namespace }}.dev.adeo.no/modiaeventdistribution
-    - https://veilederflatehendelser-{{ namespace }}.dev.intern.nav.no/modiaeventdistribution
+    - https://veilederflatehendelser-{{ namespace }}.intern.dev.nav.no/modiaeventdistribution
   vault:
     enabled: true
     paths:
