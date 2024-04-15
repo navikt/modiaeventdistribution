@@ -14,7 +14,7 @@
         <kotlin.version>1.9.22</kotlin.version>
         <ktor.version>1.6.7</ktor.version>
         <jedis.version>5.1.2</jedis.version>
-        <common.version>2.2020.08.07_16.18-e6be6d6a09e6</common.version>
+        <common.version>2.2023.01.10_13.49-81ddc732df3a</common.version>
         <main.class>no.nav.modiaeventdistribution.MainKt</main.class>
     </properties>
 
