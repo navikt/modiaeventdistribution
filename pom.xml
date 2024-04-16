@@ -11,7 +11,7 @@
     <properties>
         <java.version>11</java.version>
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
-        <kotlin.version>1.9.22</kotlin.version>
+        <kotlin.version>1.9.23</kotlin.version>
         <ktor.version>1.6.7</ktor.version>
         <jedis.version>5.1.2</jedis.version>
         <common.version>2.2023.01.10_13.49-81ddc732df3a</common.version>
