@@ -9,8 +9,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>11</java.version>
-        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
+        <java.version>17</java.version>
+        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.version>1.9.23</kotlin.version>
         <ktor.version>1.6.7</ktor.version>
         <jedis.version>5.1.2</jedis.version>
