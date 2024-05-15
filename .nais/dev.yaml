@@ -35,7 +35,7 @@ spec:
       cpu: 600m
       memory: 512Mi
   ingresses:
-    - https://modiaeventdistribution.dev.intern.nav.no
+    - https://modiaeventdistribution.intern.dev.nav.no
   envFrom:
     - secret: modiacontextholder-redis-passord
   env:
