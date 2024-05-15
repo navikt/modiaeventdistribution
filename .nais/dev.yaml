@@ -1,24 +1,23 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: modiaeventdistribution-{{ namespace }}
+  name: modiaeventdistribution
   namespace: personoversikt
   labels:
     team: personoversikt
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   image: "{{ image }}"
   port: 8080
   liveness:
-    path: modiaeventdistribution/internal/isAlive
+    path: /internal/isAlive
     initialDelay: 20
     timeout: 1
     periodSeconds: 5
     failureThreshold: 10
   readiness:
-    path: modiaeventdistribution/internal/isReady
+    path: /internal/isReady
     initialDelay: 20
     timeout: 1
   replicas:
@@ -27,7 +26,7 @@ spec:
     cpuThresholdPercentage: 60
   prometheus:
     enabled: true
-    path: modiaeventdistribution/internal/metrics
+    path: /internal/metrics
   resources:
     limits:
       cpu: 3000m
@@ -36,10 +35,7 @@ spec:
       cpu: 600m
       memory: 512Mi
   ingresses:
-    - https://modiaeventdistribution-{{ namespace }}.nais.preprod.local/modiaeventdistribution
-    - https://veilederflatehendelser-{{ namespace }}.adeo.no/modiaeventdistribution
-    - https://veilederflatehendelser-{{ namespace }}.dev.adeo.no/modiaeventdistribution
-    - https://veilederflatehendelser-{{ namespace }}.dev.intern.nav.no/modiaeventdistribution
+    - https://modiaeventdistribution.dev.intern.nav.no
   envFrom:
     - secret: modiacontextholder-redis-passord
   env:
@@ -47,7 +43,9 @@ spec:
       value: "modiaeventdistribution"
     - name: APP_VERSION
       value: "{{ version }}"
+    - name: BASE_PATH
+      value: ""
     - name: APP_ENVIRONMENT
-      value: "{{ namespace }}"
+      value: q2
     - name: REDIS_HOST
-      value: "modiacontextholder-redis-med-passord.personoversikt.svc.nais.local"
+      value: "modiacontextholder-redis-med-passord.personoversikt.svc.cluster.local"
