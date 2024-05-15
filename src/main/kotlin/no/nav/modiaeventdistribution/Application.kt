@@ -46,7 +46,7 @@ fun startApplication(config: Config) {
         }
 
         routing {
-            route(config.appName) {
+            route(config.basePath ?: config.appName) {
                 naisRoutes(
                     readinessCheck = { applicationState.initialized },
                     livenessCheck = { applicationState.running },
