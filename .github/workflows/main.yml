@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
           cache: 'maven'
       - name: Build using maven
         run: |
@@ -76,7 +76,7 @@ jobs:
         env:
           PRINT_PAYLOAD: true
           CLUSTER: dev-gcp
-          RESOURCE: .nais/dev.yml
+          RESOURCE: .nais/dev.yaml
           VAR: image=${{ needs.build-and-push.outputs.image }}
 
   deploy-prod:
