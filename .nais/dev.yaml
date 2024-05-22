@@ -36,6 +36,10 @@ spec:
       memory: 512Mi
   ingresses:
     - https://modiaeventdistribution.intern.dev.nav.no
+  accessPolicy:
+    outbound:
+      rules:
+        - application: modiacontextholder-redis-med-passord
   envFrom:
     - secret: modiacontextholder-redis-passord
   env:
