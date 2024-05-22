@@ -36,6 +36,7 @@ spec:
       memory: 512Mi
   ingresses:
     - https://modiaeventdistribution.intern.dev.nav.no
+    - https://modiaeventdistribution.ansatt.dev.nav.no
   accessPolicy:
     outbound:
       rules:
