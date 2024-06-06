@@ -7,8 +7,7 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
-import io.micrometer.prometheus.PrometheusMeterRegistry
-import io.prometheus.client.exporter.common.TextFormat
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.common.health.selftest.SelfTestCheck
@@ -39,10 +38,7 @@ fun Route.naisRoutes(
         }
 
         get("/metrics") {
-            call.respondText(
-                contentType = ContentType.parse(TextFormat.CONTENT_TYPE_004),
-                text = collectorRegistry.scrape()
-            )
+            call.respondText(collectorRegistry.scrape())
         }
 
         get("/selftest") {
