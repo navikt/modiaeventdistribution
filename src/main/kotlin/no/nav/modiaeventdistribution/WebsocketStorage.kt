@@ -1,16 +1,12 @@
 package no.nav.modiaeventdistribution
 
-import io.ktor.features.BadRequestException
-import io.ktor.http.cio.websocket.Frame
-import io.ktor.http.cio.websocket.pingPeriod
-import io.ktor.websocket.DefaultWebSocketServerSession
-import io.ktor.websocket.WebSocketServerSession
-import io.ktor.websocket.WebSockets
+import io.ktor.server.plugins.BadRequestException
+import io.ktor.server.websocket.*
+import io.ktor.websocket.Frame
 import io.micrometer.core.instrument.Gauge
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import no.nav.modiaeventdistribution.infrastructur.fromJson
@@ -24,14 +20,14 @@ class WebsocketStorage(private val flow: Flow<String?>) {
             pingPeriod = Duration.ofMinutes(3)
         }
     }
-    
+
     init {
         Gauge
             .builder("websocket_clients", this::getAntallTilkoblinger)
             .register(metricsRegistry)
         GlobalScope.launch { propagateMessageToWebsocket() }
     }
-    
+
     private val sessions = ConcurrentHashMap<String, MutableList<WebSocketServerSession>>()
     val wsHandler: suspend DefaultWebSocketServerSession.() -> Unit = {
         val ident = (call.parameters["ident"] ?: throw BadRequestException("No ident found"))
@@ -46,28 +42,28 @@ class WebsocketStorage(private val flow: Flow<String?>) {
             sessions[ident]?.remove(this)
         }
     }
-    
+
     private fun getAntallTilkoblinger(): Int = sessions
         .values
         .map { it.size }
         .sum()
-    
+
     private suspend fun propagateMessageToWebsocket() {
         flow.filterNotNull().collect { value ->
             try {
                 val event = value.fromJson<Event>()
                 val (id, veilederIdent, eventType) = event
                 log.info("Sending $eventType to $veilederIdent med id '$id'")
-                
+
                 sessions[veilederIdent]?.forEach {
                     it.send(Frame.Text(eventType))
                 }
             } catch (_: CancellationException) {
                 // Ignore these types of errors
-            } catch (e: Exception ) {
+            } catch (e: Exception) {
                 log.error("Error propagating message to Websocket:", e)
             }
         }
     }
-    
+
 }

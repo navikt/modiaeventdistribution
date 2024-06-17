@@ -1,13 +1,12 @@
 package no.nav.modiaeventdistribution
 
-import io.ktor.application.install
-import io.ktor.metrics.micrometer.MicrometerMetrics
-import io.ktor.routing.route
-import io.ktor.routing.routing
+import io.ktor.server.application.install
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
+import io.ktor.server.metrics.micrometer.MicrometerMetrics
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.websocket.WebSockets
-import io.ktor.websocket.webSocket
+import io.ktor.server.websocket.*
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
@@ -19,6 +18,7 @@ import no.nav.modiaeventdistribution.infrastructur.naisRoutes
 import no.nav.modiaeventdistribution.redis.setupRedis
 
 val metricsRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 data class Event(
     val id: Long,
