@@ -14,11 +14,23 @@
         <kotlin.version>2.0.0</kotlin.version>
         <ktor.version>1.6.7</ktor.version>
         <jedis.version>5.1.3</jedis.version>
-        <common.version>2.2023.01.10_13.49-81ddc732df3a</common.version>
+        <common.version>3.2024.05.23_05.46-2b29fa343e8e</common.version>
         <main.class>no.nav.modiaeventdistribution.MainKt</main.class>
     </properties>
 
     <version>1.0-SNAPSHOT</version>
+
+    <repositories>
+        <!-- Legger til central eksplisitt for prioritet over github -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>github</id>
+            <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -182,11 +194,4 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
-
 </project>
