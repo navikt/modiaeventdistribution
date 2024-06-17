@@ -21,7 +21,6 @@ val metricsRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 data class Event(
-    val id: Long,
     val veilederIdent: String,
     val eventType: String
 )
