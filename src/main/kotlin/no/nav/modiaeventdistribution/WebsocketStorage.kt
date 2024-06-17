@@ -52,8 +52,8 @@ class WebsocketStorage(private val flow: Flow<String?>) {
         flow.filterNotNull().collect { value ->
             try {
                 val event = value.fromJson<Event>()
-                val (id, veilederIdent, eventType) = event
-                log.info("Sending $eventType to $veilederIdent med id '$id'")
+                val (veilederIdent, eventType) = event
+                log.info("Sending $eventType to $veilederIdent")
 
                 sessions[veilederIdent]?.forEach {
                     it.send(Frame.Text(eventType))

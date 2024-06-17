@@ -16,7 +16,7 @@ object TestUtils {
 
     class RedisContainer : GenericContainer<RedisContainer>("redis:6-alpine") {
         init {
-            withCommand("redis-server --requirepass ${WithRedis.PASSWORD}")
+            withCommand("redis-server --requirepass $PASSWORD")
             withExposedPorts(6379)
         }
     }
@@ -69,6 +69,7 @@ class RedisTest : TestUtils.WithRedis {
         redisConsumer.start()
         delay(1000)
         val publisher = Jedis(redisHostAndPort())
+        publisher.auth(PASSWORD)
         publisher.publish(channel, message)
         val messageList = redisConsumer.getFlow().take(1).toList()
 
