@@ -13,7 +13,7 @@
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.version>2.0.0</kotlin.version>
         <ktor.version>2.3.12</ktor.version>
-        <jedis.version>5.1.3</jedis.version>
+        <jedis.version>5.1.4</jedis.version>
         <common.version>3.2024.05.23_05.46-2b29fa343e8e</common.version>
         <main.class>no.nav.modiaeventdistribution.MainKt</main.class>
     </properties>
