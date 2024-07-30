@@ -1,11 +1,11 @@
 package no.nav.modiaeventdistribution.redis
 
 import no.nav.common.utils.EnvironmentUtils
-import redis.clients.jedis.HostAndPort
 
 fun setupRedis(): Redis.Consumer {
     return Redis.Consumer(
-        hostAndPort = HostAndPort(EnvironmentUtils.getRequiredProperty("REDIS_HOST"), 6379),
+        uri = EnvironmentUtils.getRequiredProperty("REDIS_URI"),
+        user = EnvironmentUtils.getRequiredProperty("REDIS_USER"),
         password = EnvironmentUtils.getRequiredProperty("REDIS_PASSWORD")
     )
 }

@@ -19,8 +19,9 @@ object Redis {
     fun getChannel() = "ContextOppdatering-$environment"
 
     class Consumer(
-        private val hostAndPort: HostAndPort,
+        private val uri: String,
         private val password: String,
+        private val user: String = "default",
         private val channel: String = getChannel(),
     ) : HealthCheckAware {
 
@@ -65,8 +66,8 @@ object Redis {
         private fun run() {
             while (running) {
                 try {
-                    jedis = Jedis(hostAndPort)
-                    jedis?.auth(password)
+                    jedis = Jedis(uri)
+                    jedis?.auth(user, password)
                     jedis?.subscribe(subscriber, channel)
                 } catch (e: Exception) {
                     log.error(e.message, e)
@@ -85,7 +86,7 @@ object Redis {
 
         override fun getHealthCheck(): SelfTestCheck {
             return SelfTestCheck(
-                "Redis - via ${hostAndPort.host}",
+                "Redis - via $uri",
                 false,
             ) { this.checkHealth() }
         }

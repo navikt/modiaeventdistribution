@@ -41,7 +41,7 @@ object TestUtils {
             const val PASSWORD = "password"
         }
 
-        fun redisHostAndPort() = HostAndPort(container.host, container.getMappedPort(6379))
+        fun redisUri() = "redis://${container.host}:${container.getMappedPort(6379)}"
     }
 }
 
@@ -51,7 +51,7 @@ class RedisTest : TestUtils.WithRedis {
     @Test
     fun `redis selfcheck ok`() {
         val redisConsumer = Redis.Consumer(
-            hostAndPort = redisHostAndPort(),
+            uri = redisUri(),
             channel = channel,
             password = PASSWORD,
         )
@@ -62,13 +62,13 @@ class RedisTest : TestUtils.WithRedis {
     fun `mottar redis-melding på kanal`() = runBlocking {
         val message = "TestMessage"
         val redisConsumer = Redis.Consumer(
-            hostAndPort = redisHostAndPort(),
+            uri = redisUri(),
             channel = channel,
             password = PASSWORD,
         )
         redisConsumer.start()
         delay(1000)
-        val publisher = Jedis(redisHostAndPort())
+        val publisher = Jedis(redisUri())
         publisher.auth(PASSWORD)
         publisher.publish(channel, message)
         val messageList = redisConsumer.getFlow().take(1).toList()

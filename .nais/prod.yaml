@@ -52,5 +52,9 @@ spec:
       value: ""
     - name: APP_ENVIRONMENT
       value: p
-    - name: REDIS_HOST
-      value: "modiacontextholder-redis-med-passord.personoversikt.svc.cluster.local"
+    - name: REDIS_URI
+      value: "redis://modiacontextholder-redis-med-passord:6379"
+    - name: REDIS_USER
+      value: "$(REDIS_USERNAME_CONTEXTHOLDER)"
+    - name: REDIS_PASSWORD
+      value: "$(REDIS_PASSWORD_CONTEXTHOLDER)"
