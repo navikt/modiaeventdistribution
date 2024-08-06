@@ -34,13 +34,12 @@ spec:
     requests:
       cpu: 600m
       memory: 512Mi
+  redis:
+    - instance: contextholder
+      access: read
   ingresses:
     - https://modiaeventdistribution.intern.nav.no
     - https://modiaeventdistribution.ansatt.nav.no
-  accessPolicy:
-    outbound:
-      rules:
-        - application: modiacontextholder-redis-med-passord
   envFrom:
     - secret: modiacontextholder-redis-passord
   env:
@@ -53,7 +52,7 @@ spec:
     - name: APP_ENVIRONMENT
       value: p
     - name: REDIS_URI
-      value: "redis://modiacontextholder-redis-med-passord:6379"
+      value: "$(REDIS_URI_CONTEXTHOLDER)"
     - name: REDIS_USER
       value: "$(REDIS_USERNAME_CONTEXTHOLDER)"
     - name: REDIS_PASSWORD
